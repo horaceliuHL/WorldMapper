@@ -1,10 +1,10 @@
 @use 'node_modules/wt-frontend/build/global/theme' with (
-    $primary-color: #ffc800,
+    $primary-color: grey,
     $background-color: rgb(64, 69, 78),//#d9d6cc,
     $navbar-background-color: #353a44,//rgb(64, 69, 78),
     $sidebar-background-color: #2b2e36,//#353a44,
     $text-color: #e9edf0,
-    $modal-background: rgb(64, 69, 78),
+    $modal-background: black,
     $modal-section-padding: 24px,
     $modal-radius: 4px,
     $modal-border: 1px solid rgb(87, 93, 105),
@@ -44,14 +44,6 @@
 	--blue-gray: #7e8084;
 	--darkblue-gray: #2b2e36;
     --warm-black: #322d2d;
-}
-
-html, body {
-    margin: 0;
-    font-family: 'Consolas';
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    background-color: #d9d6cc;
 }
 
 .complete-task {
@@ -195,8 +187,10 @@ html, body {
 }
 
 .modal-header {
-    color: $text-color;
+    color: white;
+    background-color: #cf2e2e;
     font-size: 28px;
+    font-weight: bold;
 }
 
 .navbar-options {

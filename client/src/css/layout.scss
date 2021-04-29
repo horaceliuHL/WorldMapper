@@ -1,6 +1,5 @@
 #root {
     height: 100vh;
-    font-family: 'Consolas';
 }
 
 html {
@@ -176,12 +175,22 @@ html {
 }
 
 .login-modal {
-    width: 350px;
+    width: 750px;
+}
+
+.modal-header-div {
+    margin: auto;
+    margin-right: 45%;
+}
+
+.modal-header-div1 {
+    margin: auto;
+    margin-right: 42.5%;
 }
 
 .signup-modal {
     display: block;
-    width: 375px;
+    width: 750px;
 }
 
 .modal-col-gap{
@@ -192,6 +201,24 @@ html {
     text-transform: uppercase;
     font-weight: bold;
     letter-spacing: 1px;
+    width: 300px;
+    height: 50px;
+    text-align: center;
+    align-self: center;
+    justify-content: center;
+    margin-right: 7%;
+}
+
+.modal-button1 {
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+    width: 300px;
+    height: 50px;
+    text-align: center;
+    align-self: center;
+    justify-content: center;
+    margin-left: 7%;
 }
 
 .modal-spacer {

@@ -1,0 +1,55 @@
+import React                                from 'react';
+import { LOGOUT }                           from '../../cache/mutations';
+import { useMutation, useApolloClient }     from '@apollo/client';
+import {
+    Navbar,
+} from 'react-bootstrap';
+import '../../css/navbar.css'
+
+const LoggedIn = (props) => {
+    const client = useApolloClient();
+	const [Logout] = useMutation(LOGOUT);
+
+    const handleLogout = async (e) => {
+        Logout();
+        const { data } = await props.fetchUser();
+        if (data) {
+            let reset = await client.resetStore();
+        }
+    };
+
+    return (
+        <Navbar className="navbar">
+            <Navbar.Brand bsPrefix="title">The World Data Mapper</Navbar.Brand>
+            <Navbar.Text bsPrefix="name" onClick={props.setShowUpdate}>{props.name}</Navbar.Text>
+            <Navbar.Text bsPrefix="logout" onClick={handleLogout}>Logout</Navbar.Text>
+        </Navbar>
+    );
+};
+
+const LoggedOut = (props) => {
+    return (
+        <>
+        <Navbar bsPrefix="navbar" >
+            <Navbar.Brand bsPrefix="title">The World Data Mapper</Navbar.Brand>
+            <Navbar.Text bsPrefix="create" onClick={props.setShowCreate}>Create Account</Navbar.Text>
+            <Navbar.Text bsPrefix="login" onClick={props.setShowLogin}>Login</Navbar.Text>
+        </Navbar>
+        </>
+    );
+};
+
+
+const NavbarOptions = (props) => {
+    return (
+        <>
+            {
+                props.auth === false ? <LoggedOut setShowLogin={props.setShowLogin} setShowCreate={props.setShowCreate} />
+                : <LoggedIn fetchUser={props.fetchUser} logout={props.logout} name={props.name} setShowUpdate={props.setShowUpdate} />
+            }
+        </>
+
+    );
+};
+
+export default NavbarOptions;

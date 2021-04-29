@@ -1,0 +1,59 @@
+.navbar {
+    background-color: black;
+    height: 75px;
+}
+.title {
+    color: #cf6b3c;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.create {
+    color: #d97ca7;
+    position:absolute;
+    right: 12%;
+    font-size:20px;
+    font-weight: bold;
+
+}
+
+.create:hover {
+    cursor: pointer;
+}
+
+.login {
+    color: white;
+    position:absolute;
+    right: 4%;
+    font-size:20px;
+    font-weight: bold;
+}
+
+.login:hover {
+    cursor: pointer;
+}
+
+.name {
+    color: #d97ca7;
+    position:absolute;
+    right: 12%;
+    font-size:20px;
+    font-weight: bold;
+
+}
+
+.name:hover {
+    cursor: pointer;
+}
+
+.logout {
+    color: white;
+    position:absolute;
+    right: 4%;
+    font-size:20px;
+    font-weight: bold;
+}
+
+.logout:hover {
+    cursor: pointer;
+}

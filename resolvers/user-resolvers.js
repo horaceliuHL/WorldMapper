@@ -60,16 +60,13 @@ module.exports = {
 			const { email, password, name } = args;
 			const alreadyRegistered = await User.findOne({email: email});
 			if(alreadyRegistered) {
-				const updated = await User.updateOne({email: email}, { email: email, password: password, name: name });
+				const hashed = await bcrypt.hash(password, 10);
+				const updated = await User.updateOne({email: email}, { email: email, password: hashed, name: name });
 				if (updated) return true
 				else return false
 			} else {
 				console.log('User not found');
-				return(new User({
-					_id: '',
-					name: '',
-					email: 'does not exist', 
-					password: '',}));
+				return 'does not exist';
 			}
 		},
 		logout:(_, __, { res }) => {
