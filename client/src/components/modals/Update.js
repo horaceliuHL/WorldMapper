@@ -5,10 +5,9 @@ import { useMutation }    	from '@apollo/client';
 import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WRow, WCol } from 'wt-frontend';
 
 const CreateAccount = (props) => {
-	const [input, setInput] = useState({ email: '', password: '', name: '' });
+	const [input, setInput] = useState({ oldEmail: props.user.email, email: props.user.email, password: props.user.password, name: props.user.name, id: props.user._id });
 	const [loading, toggleLoading] = useState(false);
 	const [Update] = useMutation(UPDATE);
-
 	
 	const updateInput = (e) => {
 		const { name, value } = e.target;
@@ -27,11 +26,13 @@ const CreateAccount = (props) => {
 		if (loading) { toggleLoading(true) };
 		if (error) { return `Error: ${error.message}` };
 		if (data) {
-			console.log(data)
 			toggleLoading(false);
-			if(data.update === 'does not exist') {
+			if(data.update.email === 'dne') {
 				alert('User with that email does not exist');
 			}
+            else if (data.update.email === 'ae'){
+                alert('Another user already has that email');
+            }
 			else {
 				props.fetchUser();
 			}
@@ -55,20 +56,20 @@ const CreateAccount = (props) => {
 					: <WMMain>
 							<WCol size="6">
 								<WInput 
-									className="" onBlur={updateInput} name="name" labelAnimation="up" 
-									barAnimation="solid" labelText="Name" wType="outlined" inputType="text" 
+									className="" onChange={updateInput} name="name" labelAnimation="up" 
+									barAnimation="solid" labelText="Name" wType="outlined" inputType="text" defaultValue={input.name}
 								/>
 							</WCol>
 
 						<div className="modal-spacer">&nbsp;</div>
 						<WInput 
 							className="modal-input" onBlur={updateInput} name="email" labelAnimation="up" 
-							barAnimation="solid" labelText="Email Address" wType="outlined" inputType="text" 
+							barAnimation="solid" labelText="Email Address" wType="outlined" inputType="text" defaultValue={input.email}
 						/>
 						<div className="modal-spacer">&nbsp;</div>
 						<WInput 
 							className="modal-input" onBlur={updateInput} name="password" labelAnimation="up" 
-							barAnimation="solid" labelText="Password" wType="outlined" inputType="password" 
+							barAnimation="solid" labelText="Password" wType="outlined" inputType="password" defaultValue={input.password}
 						/>
 					</WMMain>
 			}

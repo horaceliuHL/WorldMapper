@@ -21,7 +21,7 @@ const LoggedIn = (props) => {
     return (
         <Navbar className="navbar">
             <Navbar.Brand bsPrefix="title">The World Data Mapper</Navbar.Brand>
-            <Navbar.Text bsPrefix="name" onClick={props.setShowUpdate}>{props.name}</Navbar.Text>
+            <Navbar.Text bsPrefix="name" onClick={props.setShowUpdate}>{props.user.name}</Navbar.Text>
             <Navbar.Text bsPrefix="logout" onClick={handleLogout}>Logout</Navbar.Text>
         </Navbar>
     );
@@ -45,7 +45,7 @@ const NavbarOptions = (props) => {
         <>
             {
                 props.auth === false ? <LoggedOut setShowLogin={props.setShowLogin} setShowCreate={props.setShowCreate} />
-                : <LoggedIn fetchUser={props.fetchUser} logout={props.logout} name={props.name} setShowUpdate={props.setShowUpdate} />
+                : <LoggedIn fetchUser={props.fetchUser} logout={props.logout} user={props.user} setShowUpdate={props.setShowUpdate} />
             }
         </>
 

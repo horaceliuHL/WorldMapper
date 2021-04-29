@@ -57,16 +57,32 @@ module.exports = {
 			return user;
 		},
 		update: async (_, args, { res }) => {
-			const { email, password, name } = args;
-			const alreadyRegistered = await User.findOne({email: email});
+			const { email, password, name, id, oldEmail } = args;
+			const newId = new ObjectId(id);
+			const alreadyRegistered = await User.findOne({_id: newId});
+			const temp = false;
+			if (oldEmail !== email){
+				temp1 = await User.findOne({email: email});
+				if (temp1) temp = true;
+			}
+			if (temp === true) {
+				return(new User({
+					_id: '',
+					name: '',
+					email: 'ae', 
+					password: '',}));
+			}
 			if(alreadyRegistered) {
 				const hashed = await bcrypt.hash(password, 10);
-				const updated = await User.updateOne({email: email}, { email: email, password: hashed, name: name });
+				const updated = await User.updateOne({_id: newId}, { email: email, password: hashed, name: name });
 				if (updated) return true
 				else return false
 			} else {
-				console.log('User not found');
-				return 'does not exist';
+				return(new User({
+					_id: '',
+					name: '',
+					email: 'dne', 
+					password: '',}));
 			}
 		},
 		logout:(_, __, { res }) => {

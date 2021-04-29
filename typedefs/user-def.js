@@ -13,7 +13,7 @@ const typeDefs = gql `
 	extend type Mutation {
 		login(email: String!, password: String!): User
 		register(email: String!, password: String!, name: String!): User
-		update(email: String!, password: String!, name: String!): User
+		update(email: String!, password: String!, name: String!, id: String!, oldEmail: String!): User
 		logout: Boolean!
 	}
 `;
