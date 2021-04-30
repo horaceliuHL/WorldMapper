@@ -8,6 +8,16 @@
     font-weight: bold;
 }
 
+.title:hover {
+    cursor: pointer;
+}
+
+.title1 {
+    color: #cf6b3c;
+    font-size: 28px;
+    font-weight: bold;
+}
+
 .create {
     color: #d97ca7;
     position:absolute;

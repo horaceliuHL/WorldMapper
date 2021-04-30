@@ -2,7 +2,7 @@
     width: 50%;
     height: 70%;
     margin: auto;
-    margin-top: 5%;
+    margin-top: 4%;
     background-color: white;
 }
 
@@ -19,16 +19,23 @@
 
 .flex {
     display: flex;
+    height: 100%;
 }
+
+.flex1 {
+    display: flex;
+}
+
 
 .actualMaps {
     background-color: #ebc4c5;
     height: 100%;
     width: 50%;
+    overflow-y: auto;
 }
 
 .pictures {
-    background-color: blue;
+    background-color: white;
     height: 100%;
     width: 50%;
 }
@@ -36,11 +43,11 @@
 .createMap {
     background-color: #971716;
     text-align: center;
-    font-size: 24px;
+    font-size: 30px;
     font-weight: bold;
     color: white;
-    padding-top: 1%;
-    padding-bottom: 1%; 
+    padding-top: 2%;
+    padding-bottom: 2%;
 }
 
 .createMap:hover {
@@ -53,7 +60,7 @@
     padding-left: 10%;
     font-size: 24px;
     font-weight: bold;
-    width: 350px;
+    width: 70%;
 }
 
 .eachMap:hover {
@@ -68,5 +75,15 @@
 }
 
 .delMap:hover {
+    cursor: pointer;
+}
+
+.creMap {
+    margin: auto;
+    transform: scale(1.7);
+    color: grey;
+}
+
+.creMap:hover {
     cursor: pointer;
 }

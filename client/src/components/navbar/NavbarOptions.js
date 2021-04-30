@@ -1,12 +1,15 @@
 import React                                from 'react';
 import { LOGOUT }                           from '../../cache/mutations';
 import { useMutation, useApolloClient }     from '@apollo/client';
+import { useHistory } from "react-router-dom";
 import {
     Navbar,
 } from 'react-bootstrap';
 import '../../css/navbar.css'
 
 const LoggedIn = (props) => {
+    let history = useHistory();
+
     const client = useApolloClient();
 	const [Logout] = useMutation(LOGOUT);
 
@@ -20,7 +23,7 @@ const LoggedIn = (props) => {
 
     return (
         <Navbar className="navbar">
-            <Navbar.Brand bsPrefix="title">The World Data Mapper</Navbar.Brand>
+            <Navbar.Brand bsPrefix="title" onClick={() => {history.push('/');}}>The World Data Mapper</Navbar.Brand>
             <Navbar.Text bsPrefix="name" onClick={props.setShowUpdate}>{props.user.name}</Navbar.Text>
             <Navbar.Text bsPrefix="logout" onClick={handleLogout}>Logout</Navbar.Text>
         </Navbar>
@@ -31,7 +34,7 @@ const LoggedOut = (props) => {
     return (
         <>
         <Navbar bsPrefix="navbar" >
-            <Navbar.Brand bsPrefix="title">The World Data Mapper</Navbar.Brand>
+            <Navbar.Brand bsPrefix="title1">The World Data Mapper</Navbar.Brand>
             <Navbar.Text bsPrefix="create" onClick={props.setShowCreate}>Create Account</Navbar.Text>
             <Navbar.Text bsPrefix="login" onClick={props.setShowLogin}>Login</Navbar.Text>
         </Navbar>

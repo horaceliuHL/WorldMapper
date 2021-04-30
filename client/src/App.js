@@ -1,6 +1,7 @@
 import React		from 'react';
 import Homescreen 		from './components/HomeScreen.js';
 import Mapscreen from './components/Mapscreen.js';
+import RegionSpreadsheet from './components/RegionSpreadsheet.js';
 import { useQuery } 	from '@apollo/client';
 import * as queries 	from './cache/queries';
 import { jsTPS } 		from './utils/jsTPS';
@@ -26,7 +27,7 @@ const App = () => {
 					user ?  (<Route render={() => <Mapscreen fetchUser={refetch} user={user} />}/>) 
 					: (<Route render={() => <Homescreen fetchUser={refetch} user={user} /> }/>)
 				)}/>
-				
+				<Route path="/:regionId" render={() => <RegionSpreadsheet fetchUser={refetch} user={user} tps={transactionStack}/>}/>
 			</Switch>
 		</BrowserRouter>
 	);

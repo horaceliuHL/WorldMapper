@@ -66,6 +66,13 @@ module.exports = {
 			if(deleted) return true;
 			else return false;
 		},
+		updateMapField: async (_, args) => {
+			const { field, value, _id } = args;
+			const objectId = new ObjectId(_id);
+			const updated = await Map.updateOne({_id: objectId}, {[field]: value});
+			if(updated) return value;
+			else return "";
+		},
 	// 	/** 
 	// 	 	@param 	 {object} args - a todolist objectID and item objectID
 	// 		@returns {array} the updated item array on success or the initial 
@@ -81,18 +88,6 @@ module.exports = {
 	// 		if(updated) return (listItems);
 	// 		else return (found.items);
 
-	// 	},
-		
-	// 	/** 
-	// 	 	@param 	 {object} args - a todolist objectID, field, and the update value
-	// 		@returns {boolean} true on successful update, false on failure
-	// 	**/
-	// 	updateTodolistField: async (_, args) => {
-	// 		const { field, value, _id } = args;
-	// 		const objectId = new ObjectId(_id);
-	// 		const updated = await Todolist.updateOne({_id: objectId}, {[field]: value});
-	// 		if(updated) return value;
-	// 		else return "";
 	// 	},
 	// 	/** 
 	// 		@param	 {object} args - a todolist objectID, an item objectID, field, and
