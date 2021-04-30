@@ -46,3 +46,27 @@
 .createMap:hover {
     cursor: pointer;
 }
+
+.eachMap {
+    padding-top: 3%;
+    padding-bottom: 3%;
+    padding-left: 10%;
+    font-size: 24px;
+    font-weight: bold;
+    width: 350px;
+}
+
+.eachMap:hover {
+    cursor: pointer;
+    background-color: lightgray;
+}
+
+.delMap {
+    margin: auto;
+    transform: scale(1.7);
+    color: grey;
+}
+
+.delMap:hover {
+    cursor: pointer;
+}

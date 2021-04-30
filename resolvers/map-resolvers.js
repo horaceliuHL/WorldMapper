@@ -10,8 +10,8 @@ module.exports = {
 		getAllMaps: async (_, __, { req }) => {
 			const _id = new ObjectId(req.userId);
 			if(!_id) { return([])};
-			const todolists = await Map.find({owner: _id});
-			if(todolists) return (todolists);
+			const maps = await Map.find({owner: _id});
+			if(maps) return (maps);
 
 		},
 		getMapById: async (_, args) => {
@@ -43,26 +43,29 @@ module.exports = {
 	// 		if(updated) return (item._id);
 	// 		else return ('Could not add item');
 	// 	},
-	// 	/** 
-	// 	 	@param 	 {object} args - an empty todolist object
-	// 		@returns {string} the objectID of the todolist or an error message
-	// 	**/
-	// 	addTodolist: async (_, args) => {
-	// 		const { todolist } = args;
-	// 		let objectId = new ObjectId();
-    //   if (todolist._id !== '') objectId = todolist._id;
-	// 		const { id, name, owner, items } = todolist;
-	// 		const newList = new Todolist({
-	// 			_id: objectId,
-	// 			id: id,
-	// 			name: name,
-	// 			owner: owner,
-	// 			items: items
-	// 		});
-	// 		const updated = await newList.save();
-	// 		if(updated) return objectId;
-	// 		else return ('Could not add todolist');
-	// 	},
+		addMap: async (_, args) => {
+			const { map } = args;
+			let objectId = new ObjectId();
+      		if (map._id !== '') objectId = map._id;
+			const { id, name, owner, regions } = map;
+			const newMap = new Map({
+				_id: objectId,
+				id: id,
+				name: name,
+				owner: owner,
+				regions: regions
+			});
+			const updated = await newMap.save();
+			if(updated) return objectId;
+			else return ('Could not add map');
+		},
+		deleteMap: async (_, args) => {
+			const { _id } = args;
+			const objectId = new ObjectId(_id);
+			const deleted = await Map.deleteOne({_id: objectId});
+			if(deleted) return true;
+			else return false;
+		},
 	// 	/** 
 	// 	 	@param 	 {object} args - a todolist objectID and item objectID
 	// 		@returns {array} the updated item array on success or the initial 
@@ -79,17 +82,7 @@ module.exports = {
 	// 		else return (found.items);
 
 	// 	},
-	// 	/** 
-	// 	 	@param 	 {object} args - a todolist objectID 
-	// 		@returns {boolean} true on successful delete, false on failure
-	// 	**/
-	// 	deleteTodolist: async (_, args) => {
-	// 		const { _id } = args;
-	// 		const objectId = new ObjectId(_id);
-	// 		const deleted = await Todolist.deleteOne({_id: objectId});
-	// 		if(deleted) return true;
-	// 		else return false;
-	// 	},
+		
 	// 	/** 
 	// 	 	@param 	 {object} args - a todolist objectID, field, and the update value
 	// 		@returns {boolean} true on successful update, false on failure

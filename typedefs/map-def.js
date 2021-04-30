@@ -23,6 +23,10 @@ const typeDefs = gql `
 		getAllMaps: [Map]
 		getMapById(_id: String!): Map 
 	}
+	extend type Mutation {
+		addMap(map: MapInput!): String
+		deleteMap(_id: String!): Boolean
+	}
 	input FieldInput {
 		_id: String
 		field: String
