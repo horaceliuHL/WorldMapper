@@ -13,28 +13,60 @@
 }
 
 .plusSpreadsheet {
+    transform: scale(1.9);
     color: #48c526;
     font-size: 24px;
+    margin-left: 1%;
     margin-right: 1%;
+    margin-top: 0.5%;
+}
+
+.plusSpreadsheet:hover {
+    cursor: pointer;
 }
 
 .undoArrowSpreadsheet {
+    transform: scale(1.7);
     color: white;
     font-size: 24px;
     margin-right: 1%;
+    margin-left: 1%;
+    margin-top: 0.5%;
+}
+
+.undoArrowSpreadsheet:hover {
+    cursor: pointer;
 }
 
 .redoArrowSpreadsheet {
+    transform: scale(1.7);
     color: white;
     font-size: 24px;
+    margin-left: 1%;
+    margin-top: 0.5%;
+}
+
+.redoArrowSpreadsheet:hover {
+    cursor: pointer;
 }
 
 .currentRegionSpreadsheet {
     color: white;
     font-size: 28px;
     font-weight: bold;
-    margin-left: auto;
+    margin-left: 30%;
+    margin-right: 2%;
+}
+
+.currentRegionNameSpreadsheet {
+    color: #4f8bb8;
+    font-size: 28px;
+    font-weight: bold;
     margin-right: auto;
+}
+
+.currentRegionNameSpreadsheet:hover {
+    cursor: pointer;
 }
 
 .spreadsheetOverall {
@@ -56,7 +88,14 @@
     font-weight: bold;
     color: white;
     margin: auto;
+    margin-left: 3.5%;
+    padding-left: 5%;
+    padding-right: 5%;
+}
 
+.headerNameSpreadsheet:hover {
+    cursor: pointer;
+    background-color: lightgray;
 }
 
 .headerCapitalSpreadsheet{
@@ -64,6 +103,13 @@
     font-weight: bold;
     color: white;
     margin: auto;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.headerCapitalSpreadsheet:hover {
+    cursor: pointer;
+    background-color: lightgray;
 }
 
 .headerLeaderSpreadsheet{
@@ -71,6 +117,13 @@
     font-weight: bold;
     color: white;
     margin: auto;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.headerLeaderSpreadsheet:hover {
+    cursor: pointer;
+    background-color: lightgray;
 }
 
 .headerFlagSpreadsheet{
@@ -78,6 +131,13 @@
     font-weight: bold;
     color: white;
     margin: auto;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.headerFlagSpreadsheet:hover {
+    cursor: pointer;
+    background-color: lightgray;
 }
 
 .headerLandmarksSpreadsheet{
@@ -85,9 +145,81 @@
     font-weight: bold;
     color: white;
     margin: auto;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.headerLandmarksSpreadsheet:hover {
+    cursor: pointer;
+    background-color: lightgray;
 }
 
 .itemsSpreadsheet {
     overflow-y: auto;
+    height: 100%;
+}
 
+.regionItemSpreadsheet {
+    display: flex;
+    height: 50px;
+}
+
+.regionItemCloseIconSpreadsheet{
+    transform: scale(1.7);
+    color: #d02f2f;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 1%;
+    border-style: solid;
+
+}
+
+.regionItemNameSpreadsheet {
+    font-size: 24px;
+    color: black;
+    margin-left: 1%;
+    padding-top: 0.3%;
+    padding-left: 5.5%;
+    padding-right: 6.5%;
+    border-style: solid;
+}
+
+.regionItemNameSpreadsheet:hover {
+    background-color: lightgray;
+}
+
+.regionItemCapitalSpreadsheet {
+    font-size: 24px;
+    color: black;
+    margin: auto;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.regionItemCapitalSpreadsheet:hover {
+    background-color: lightgray;
+}
+
+.regionItemLeaderSpreadsheet{
+    font-size: 24px;
+    color: black;
+    margin: auto;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.regionItemFlagSpreadsheet{
+    font-size: 24px;
+    color: black;
+    margin: auto;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.regionItemLandmarksSpreadsheet{
+    font-size: 24px;
+    color: black;
+    margin: auto;
+    padding-left: 5%;
+    padding-right: 5%;
 }

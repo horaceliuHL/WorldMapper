@@ -37,12 +37,6 @@ export const LOGOUT = gql`
 	}
 `;
 
-// export const ADD_ITEM = gql`
-//   mutation AddItem($item: ItemInput!, $_id: String!, $index: Int!) {
-//     addItem(item: $item, _id: $_id, index: $index)
-//   }
-// `;
-
 // export const DELETE_ITEM = gql`
 // 	mutation DeleteItem($itemId: String!, $_id: String!) {
 // 		deleteItem(itemId: $itemId, _id: $_id) {
@@ -98,6 +92,12 @@ export const UPDATE_MAP_FIELD = gql`
 	mutation UpdateMapField($_id: String!, $field: String!, $value: String!) {
 		updateMapField(_id: $_id, field: $field, value: $value)
 	}
+`;
+
+export const ADD_REGION = gql`
+  mutation AddRegion($region: RegionInput!) {
+    addRegion(region: $region)
+  }
 `;
 
 // export const SORT_TASKS = gql`

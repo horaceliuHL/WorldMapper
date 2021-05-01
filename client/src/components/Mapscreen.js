@@ -39,11 +39,11 @@ const Mapscreen = (props) => {
 		const { loading, error, data } = await refetch();
 		if (data) {
 			mapsList = data.getAllMaps;
-			if (activeMap._id) {
-				let tempID = activeMap._id;
-				let list = mapsList.find(list => list._id === tempID);
-				setActiveMap(list);
-			}
+			// if (activeMap._id) {
+			// 	let tempID = activeMap._id;
+			// 	let list = mapsList.find(list => list._id === tempID);
+			// 	setActiveMap(list);
+			// }
 		}
 	}
 

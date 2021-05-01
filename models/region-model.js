@@ -10,11 +10,11 @@ const regionSchema = new Schema(
 			type: Number,
 			required: true
 		},
-		name: {
+		parentId: {
 			type: String,
 			required: true
 		},
-		due_date: {
+		name: {
 			type: String,
 			required: true
 		},

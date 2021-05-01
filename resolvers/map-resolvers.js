@@ -1,5 +1,6 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const Map = require('../models/maps-model');
+const Region = require('../models/region-model');
 
 // The underscore param, "_", is a wildcard that can represent any value;
 // here it is a stand-in for the parent parameter, which can be read about in
@@ -17,32 +18,20 @@ module.exports = {
 		getMapById: async (_, args) => {
 			const { _id } = args;
 			const objectId = new ObjectId(_id);
-			const todolist = await Map.findOne({_id: objectId});
-			if(todolist) return todolist;
+			const map = await Map.findOne({_id: objectId});
+			console.log(map)
+			if(map) return map;
 			else return ({});
+		},
+		getAllRegions: async (_, __, { req }) => {
+			const _id = new ObjectId(req.userId);
+			if(!_id) { return([])};
+			const region = await Region.find();
+			if(region) return (region);
+
 		},
 	},
 	Mutation: {
-	// 	/** 
-	// 	 	@param 	 {object} args - a todolist id and an empty item object
-	// 		@returns {string} the objectID of the item or an error message
-	// 	**/
-	// 	addItem: async(_, args) => {
-	// 		const { _id, item, index } = args;
-	// 		const listId = new ObjectId(_id);
-	// 		const objectId = new ObjectId();
-	// 		const found = await Map.findOne({_id: listId});
-	// 		if(!found) return ('Map not found');
-	// 		if(item._id === '') item._id = objectId
-	// 		let listItems = found.items;
-	// 		if(index < 0) listItems.push(item);
-    //   	else listItems.splice(index, 0, item);
-			
-	// 		const updated = await Todolist.updateOne({_id: listId}, { items: listItems });
-
-	// 		if(updated) return (item._id);
-	// 		else return ('Could not add item');
-	// 	},
 		addMap: async (_, args) => {
 			const { map } = args;
 			let objectId = new ObjectId();
@@ -53,7 +42,7 @@ module.exports = {
 				id: id,
 				name: name,
 				owner: owner,
-				regions: regions
+				regions: []
 			});
 			const updated = await newMap.save();
 			if(updated) return objectId;
@@ -72,6 +61,38 @@ module.exports = {
 			const updated = await Map.updateOne({_id: objectId}, {[field]: value});
 			if(updated) return value;
 			else return "";
+		},
+		addRegion: async(_, args) => {
+			const { region } = args;
+			let objectId = new ObjectId();
+      		if (region._id !== '') objectId = region._id;
+			const { id, parentId, name, capital, leader, flag, landmarks, regions } = region;
+			let actualId = new ObjectId(parentId)
+			let findParent = await Map.findOne({_id: actualId})
+			if (!findParent || findParent === null){
+				findParent = await Region.findOne({_id: actualId})
+				let updatedChildren = findParent.regions
+				updatedChildren.push(objectId)
+				const updated = await Region.updateOne({_id: actualId}, {regions: updatedChildren});
+			} else {
+				let updatedChildren = findParent.regions
+				updatedChildren.push(objectId)
+				const updated = await Map.updateOne({_id: actualId}, {regions: updatedChildren});
+			}
+			const newRegion = new Region({
+				_id: objectId,
+				id: id,
+				parentId: parentId,
+				name: name,
+				capital: capital,
+				leader: leader,
+				flag: flag,
+				landmarks: [],
+				regions: []
+			});
+			const updated = await newRegion.save();
+			if(updated) return objectId;
+			else return ('Could not add region');
 		},
 	// 	/** 
 	// 	 	@param 	 {object} args - a todolist objectID and item objectID

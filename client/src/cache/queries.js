@@ -17,16 +17,36 @@ export const GET_DB_MAPS = gql`
 			id
 			name
 			owner
-			regions {
-				_id
-				id
-				name
-				capital
-				leader
-				flag
-				landmarks
-				regions
-			}
+			regions
 		}
 	}
 `;
+
+export const GET_DB_REGIONS = gql`
+	query GetDBRegions {
+		getAllRegions {
+			_id
+			id
+			parentId
+			name
+			capital
+			leader
+			flag
+			landmarks
+			regions
+		}
+	}
+`;
+
+export const GET_MAP_BY_ID = gql`
+	query GetMapById($_id: String!) {
+		getMapById(_id: $_id) {
+			_id
+			id
+			name
+			owner
+			regions
+		}
+	}
+`
+
