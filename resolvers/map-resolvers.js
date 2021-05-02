@@ -19,7 +19,6 @@ module.exports = {
 			const { _id } = args;
 			const objectId = new ObjectId(_id);
 			const map = await Map.findOne({_id: objectId});
-			console.log(map)
 			if(map) return map;
 			else return ({});
 		},
@@ -93,6 +92,29 @@ module.exports = {
 			const updated = await newRegion.save();
 			if(updated) return objectId;
 			else return ('Could not add region');
+		},
+		deleteRegion: async (_, args) => {
+			const { _id } = args;
+			const objectId = new ObjectId(_id);
+			const actualRegion = await Region.findOne({_id: objectId})
+			const { id, parentId, name, capital, leader, flag, landmarks, regions } = actualRegion;
+			let actualId = new ObjectId(parentId)
+			let findParent = await Map.findOne({_id: actualId})
+			if (!findParent || findParent === null){
+				findParent = await Region.findOne({_id: actualId})
+				let updatedChildren = findParent.regions
+				let tempIndex = updatedChildren.indexOf(objectId)
+				updatedChildren.splice(tempIndex, 1)
+				const updated = await Region.updateOne({_id: actualId}, {regions: updatedChildren});
+			} else {
+				let updatedChildren = findParent.regions
+				let tempIndex = updatedChildren.indexOf(objectId)
+				updatedChildren.splice(tempIndex, 1)
+				const updated = await Map.updateOne({_id: actualId}, {regions: updatedChildren});
+			}
+			const deleted = await Region.deleteOne({_id: objectId});
+			if(deleted) return true;
+			else return false;
 		},
 	// 	/** 
 	// 	 	@param 	 {object} args - a todolist objectID and item objectID

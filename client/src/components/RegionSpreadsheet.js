@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {useParams} from 'react-router-dom'
+import {useParams, useHistory} from 'react-router-dom'
 import NavbarOptions from './navbar/NavbarOptions.js';
 import UpdateAccount from './modals/Update.js';
+import DelRegion from './modals/DelRegion.js';
 import AddIcon from '@material-ui/icons/Add';
 import UndoIcon from '@material-ui/icons/Undo';
 import RedoIcon from '@material-ui/icons/Redo';
@@ -14,10 +15,16 @@ import '../css/regionspreadsheet.css';
 
 
 const RegionSpreadsheet = (props) => {
+    let history = useHistory();
+
     let actualRegion = '';
     let regionsList = []
     const [AddRegion] 			= useMutation(mutations.ADD_REGION);
     const [showUpdate, toggleShowUpdate] 		= useState(false);
+    const [showDelete, toggleShowDelete] 		= useState(false);
+
+    const [DeleteRegion] 			= useMutation(mutations.DELETE_REGION);
+    const [deleteRegionId, setDeleteRegionId] = useState('')
 
     const { regionId } = useParams()
 
@@ -36,7 +43,6 @@ const RegionSpreadsheet = (props) => {
 	if(data) { 
         regionsList = data.getAllRegions; 
         if (actualRegion === ''){
-            console.log('here!')
             actualRegion = regionsList.filter(region => {
                 return region._id === regionId;
             });
@@ -49,29 +55,21 @@ const RegionSpreadsheet = (props) => {
 
     const auth = props.user === null ? false : true;
 
-    // useEffect(() => {
-    //     console.log(regionsList)
-    //     console.log("after")
-    //     regionsList = regionsList.filter(region => {
-    //         region.parentId.includes(regionId);
-    //     });
-    //     console.log(regionsList)
-    // })
-
     const refetchRegions = async (refetch) => {
 		const { loading, error, data } = await refetch();
 		if (data) {
 			regionsList = data.getAllRegions;
-			// if (activeMap._id) {
-			// 	let tempID = activeMap._id;
-			// 	let list = mapsList.find(list => list._id === tempID);
-			// 	setActiveMap(list);
-			// }
 		}
 	}
 
     const setShowUpdate = () => {
+        toggleShowDelete(false)
         toggleShowUpdate(!showUpdate)
+    }
+
+    const setShowDelete = () => {
+        toggleShowUpdate(false)
+        toggleShowDelete(!showDelete)
     }
 
     const addRegion = async () => {
@@ -92,10 +90,13 @@ const RegionSpreadsheet = (props) => {
             landmarks: [],
             regions: [],
 		};
-        console.log(newRegion.parentId)
         const { data } = await AddRegion({ variables: { region: newRegion }, refetchQueries: [{ query: GET_DB_REGIONS }] });
         await refetchRegions(refetch);
-        console.log(data)
+    }
+
+    const deleteRegion = async (_id) => {
+        DeleteRegion({ variables: { _id: _id }, refetchQueries: [{ query: GET_DB_REGIONS }] });
+		refetch();
     }
 
     return(
@@ -122,8 +123,14 @@ const RegionSpreadsheet = (props) => {
                 <div className="itemsSpreadsheet">{
                     regionsList && regionsList.map(region => (
                         <div className="regionItemSpreadsheet">
-                            <CloseIcon className="regionItemCloseIconSpreadsheet"></CloseIcon>
-                            <div className="regionItemNameSpreadsheet">{region.name}</div>
+                            <div className="regionItemCloseIconSpreadsheet" onClick={() => {
+                                setDeleteRegionId(region._id)
+                                toggleShowUpdate(false)
+                                toggleShowDelete(!showDelete)
+                            }}><CloseIcon className="regionItemCloseIconSpreadsheet1"></CloseIcon></div>
+                            <div className="regionItemNameSpreadsheet" onClick={() => {
+                                // history.push("/" + region._id)
+                            }}>{region.name}</div>
                             <div className="regionItemCapitalSpreadsheet">{region.capital}</div>
                             <div className="regionItemLeaderSpreadsheet">{region.leader}</div>
                             <div className="regionItemFlagSpreadsheet">{region.flag}</div>
@@ -137,6 +144,9 @@ const RegionSpreadsheet = (props) => {
         </div>
         {
             showUpdate && (<UpdateAccount fetchUser={props.fetchUser} user={props.user} setShowUpdate={setShowUpdate} />)
+        }
+        {
+            showDelete && (<DelRegion deleteMap={deleteRegion} id={deleteRegionId} setShowDelete={setShowDelete} />)
         }
         </>
     )
