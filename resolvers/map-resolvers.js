@@ -20,7 +20,6 @@ module.exports = {
 			const objectId = new ObjectId(_id);
 			const map = await Map.findOne({_id: objectId});
 			if(map) return map;
-			else return ({});
 		},
 		getAllRegions: async (_, __, { req }) => {
 			const _id = new ObjectId(req.userId);

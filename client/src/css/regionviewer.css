@@ -1,0 +1,102 @@
+.flexContainerviewer{
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.leftSideViewer{
+    background-color: gray;
+    width: 100%;
+
+}
+
+.undoArrowViewer{
+    margin-top: 4%;
+    margin-left: 9%;
+    transform: scale(1.7);
+    color: white;
+    font-size: 24px;
+}
+
+.undoArrowViewer:hover{
+    background-color: lightgray;
+}
+
+.redoArrowViewer{
+    margin-left: 4%;
+    margin-top: 4%;
+    transform: scale(1.7);
+    color: white;
+    font-size: 24px;
+
+}
+
+.redoArrowViewer:hover{
+    background-color: lightgray;
+}
+
+.flagViewer{
+    height: 200px;
+    width: 600px;
+    margin-left: 4%;
+    margin-top: 4%;
+}
+
+.regionInfoViewer{
+    margin-left: 7%;
+    margin-top: 4%;
+}
+
+.regionNameViewer{
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 1%;
+
+}
+
+.parentRegionViewer{
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 1%;
+
+}
+
+.regionCapitalViewer{
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 1%;
+
+}
+
+.regionLeaderViewer{
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 1%;
+
+}
+
+.subregionsViewer{
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 1%;
+
+}
+
+.rightSideViewer{
+    background-color: aqua;
+    width: 100%;
+
+}
+
+.regionLandmarksHeader{
+
+}
+
+.regionLandmarksBox{
+
+}

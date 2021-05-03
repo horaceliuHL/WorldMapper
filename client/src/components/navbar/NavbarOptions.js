@@ -19,6 +19,7 @@ const LoggedIn = (props) => {
         if (data) {
             let reset = await client.resetStore();
         }
+        history.push('/')
     };
 
     return (

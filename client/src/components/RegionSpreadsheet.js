@@ -17,7 +17,8 @@ import '../css/regionspreadsheet.css';
 const RegionSpreadsheet = (props) => {
     let history = useHistory();
 
-    let actualRegion = '';
+    let actualRegion = {};
+    actualRegion.name = '';
     let regionsList = []
     const [AddRegion] 			= useMutation(mutations.ADD_REGION);
     const [showUpdate, toggleShowUpdate] 		= useState(false);
@@ -25,6 +26,11 @@ const RegionSpreadsheet = (props) => {
 
     const [DeleteRegion] 			= useMutation(mutations.DELETE_REGION);
     const [deleteRegionId, setDeleteRegionId] = useState('')
+
+    let clickOrEdit = {
+        clicked: 0,
+        editRegionName: false,
+    }
 
     const { regionId } = useParams()
 
@@ -34,7 +40,7 @@ const RegionSpreadsheet = (props) => {
     if(loading1) { console.log(loading1, 'loading'); }
 	if(error1) { console.log(error1, 'error'); }
 	if(data1) { 
-        actualRegion = data1.getMapById; 
+        if (data1.getMapById) actualRegion = data1.getMapById; 
     }
 
     const { loading, error, data, refetch } = useQuery(GET_DB_REGIONS);
@@ -42,10 +48,8 @@ const RegionSpreadsheet = (props) => {
 	if(error) { console.log(error, 'error'); }
 	if(data) { 
         regionsList = data.getAllRegions; 
-        if (actualRegion === ''){
-            actualRegion = regionsList.filter(region => {
-                return region._id === regionId;
-            });
+        if (actualRegion.name === ''){
+            actualRegion = regionsList.find(region => region._id === regionId)
         }
         regionsList = regionsList.filter(region => {
             return region.parentId === regionId;
@@ -59,6 +63,9 @@ const RegionSpreadsheet = (props) => {
 		const { loading, error, data } = await refetch();
 		if (data) {
 			regionsList = data.getAllRegions;
+            regionsList = regionsList.filter(region => {
+                return region.parentId === regionId;
+            });   
 		}
 	}
 
@@ -110,7 +117,11 @@ const RegionSpreadsheet = (props) => {
                 <UndoIcon className="undoArrowSpreadsheet"></UndoIcon>
                 <RedoIcon className="redoArrowSpreadsheet"></RedoIcon>
                 <div className="currentRegionSpreadsheet">Region Name: </div>
-                <div className="currentRegionNameSpreadsheet">{actualRegion.name}</div>
+                {
+                    actualRegion ? <div className="currentRegionNameSpreadsheet">{actualRegion.name}</div>
+                    : <div className="currentRegionNameSpreadsheet"> </div>
+                }
+                
             </div>
             <div className="spreadsheetOverall">
                 <div className="headerSpreadsheet">
@@ -118,7 +129,7 @@ const RegionSpreadsheet = (props) => {
                     <div className="headerCapitalSpreadsheet">Capital &#10225;</div>
                     <div className="headerLeaderSpreadsheet">Leader &#10225;</div>
                     <div className="headerFlagSpreadsheet">Flag &#10225;</div>
-                    <div className="headerLandmarksSpreadsheet">Landmarks &#10225; </div>
+                    <div className="headerLandmarksSpreadsheet">Landmarks &#10225;</div>
                 </div>
                 <div className="itemsSpreadsheet">{
                     regionsList && regionsList.map(region => (
@@ -129,12 +140,24 @@ const RegionSpreadsheet = (props) => {
                                 toggleShowDelete(!showDelete)
                             }}><CloseIcon className="regionItemCloseIconSpreadsheet1"></CloseIcon></div>
                             <div className="regionItemNameSpreadsheet" onClick={() => {
-                                // history.push("/" + region._id)
+                                clickOrEdit.clicked = clickOrEdit.clicked + 1
+                                setTimeout(() => {
+                                    if (clickOrEdit.clicked === 1){
+                                        history.push("/" + region._id)
+                                    } else if (clickOrEdit.clicked === 2){
+                                        console.log("double clicked!!")
+                                    }
+                                    clickOrEdit.clicked = 0
+                                }, 400)
                             }}>{region.name}</div>
-                            <div className="regionItemCapitalSpreadsheet">{region.capital}</div>
+                            <div className="regionItemCapitalSpreadsheet" onDoubleClick={() => {
+                                console.log("couble asdf")
+                            }}>{region.capital}</div>
                             <div className="regionItemLeaderSpreadsheet">{region.leader}</div>
                             <div className="regionItemFlagSpreadsheet">{region.flag}</div>
-                            <div className="regionItemLandmarksSpreadsheet">{region.landmarks} asdf</div>
+                            <div className="regionItemLandmarksSpreadsheet" onClick={() => {
+                                history.push("/viewer/" + region._id);
+                            }}>{region.landmarks}</div>
                         </div>
                         
                     ))
