@@ -8,7 +8,7 @@ import UndoIcon from '@material-ui/icons/Undo';
 import RedoIcon from '@material-ui/icons/Redo';
 import CloseIcon from '@material-ui/icons/Close';
 import { useMutation, useQuery } 		from '@apollo/client';
-import { GET_DB_REGIONS, GET_MAP_BY_ID} 				from '../cache/queries';
+import { GET_DB_REGIONS, GET_MAP_BY_ID, GET_ALL_PARENT_REGIONS} 				from '../cache/queries';
 import * as mutations 					from '../cache/mutations';
 
 import '../css/regionspreadsheet.css';
@@ -20,6 +20,7 @@ const RegionSpreadsheet = (props) => {
     let actualRegion = {};
     actualRegion.name = '';
     let regionsList = []
+    let parentRegions = []
     const [AddRegion] 			= useMutation(mutations.ADD_REGION);
     const [showUpdate, toggleShowUpdate] 		= useState(false);
     const [showDelete, toggleShowDelete] 		= useState(false);
@@ -43,6 +44,15 @@ const RegionSpreadsheet = (props) => {
         if (data1.getMapById) actualRegion = data1.getMapById; 
     }
 
+    const { loading:loading2, error:error2, data:data2, refetch:refetch2 } = useQuery(GET_ALL_PARENT_REGIONS, {
+        variables: {_id: regionId},
+    });
+    if(loading2) { console.log(loading2, 'loading'); }
+	if(error2) { console.log(error2, 'error'); }
+	if(data2) { 
+        if (data2.getAllParentRegions) parentRegions = data2.getAllParentRegions; 
+    }
+
     const { loading, error, data, refetch } = useQuery(GET_DB_REGIONS);
     if(loading) { console.log(loading, 'loading'); }
 	if(error) { console.log(error, 'error'); }
@@ -55,7 +65,6 @@ const RegionSpreadsheet = (props) => {
             return region.parentId === regionId;
         });   
     }
-        
 
     const auth = props.user === null ? false : true;
 
@@ -111,6 +120,19 @@ const RegionSpreadsheet = (props) => {
         <NavbarOptions
                 fetchUser={props.fetchUser} auth={auth} user={props.user} setShowUpdate={setShowUpdate}
                />
+        <div className="navbarDirections">
+            {
+                parentRegions && parentRegions.map(x => (
+                    <>
+                    {
+                        (x === parentRegions[parentRegions.length - 1]) ? <div></div>
+                        : (x === parentRegions[0]) ? <div className="navbarClickDiv" onClick={() => history.push('/' + x._id)}>{x.name}</div> 
+                        : <div className="navbarClickDiv" onClick={() => history.push('/' + x._id)}> &nbsp;-&gt; {x.name} </div>
+                    }
+                    </>
+                ))
+            }
+        </div>
         <div className="entireSpreadsheet">
             <div className="flexSpreadsheet">
                 <AddIcon className="plusSpreadsheet" onClick={addRegion}></AddIcon>

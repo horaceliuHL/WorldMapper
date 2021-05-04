@@ -28,6 +28,30 @@ module.exports = {
 			if(region) return (region);
 
 		},
+		getAllParentRegions: async (_, args) => {
+			const { _id } = args;
+			const objectId = new ObjectId(_id);
+			let parentInfo = [];
+			let counter = 0;
+			let tempId = objectId
+			let findParent = await Region.findOne({_id: objectId})
+			while (findParent !== null){
+				parentInfo[counter] = {
+					_id: findParent._id,
+					name: findParent.name,
+				}
+				counter += 1;
+				tempId = findParent.parentId
+				findParent = await Region.findOne({_id: tempId})
+			}
+			findParent = await Map.findOne({_id: tempId})
+			parentInfo[parentInfo.length] = {
+				_id: findParent._id,
+				name: findParent.name,
+			}
+			parentInfo.reverse()
+			return parentInfo
+		},
 	},
 	Mutation: {
 		addMap: async (_, args) => {

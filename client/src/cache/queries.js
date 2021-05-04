@@ -50,3 +50,12 @@ export const GET_MAP_BY_ID = gql`
 	}
 `
 
+export const GET_ALL_PARENT_REGIONS = gql`
+	query GetAllParentRegions($_id: String!) {
+		getAllParentRegions(_id: $_id) {
+			_id
+			name
+		}
+	}
+`
+

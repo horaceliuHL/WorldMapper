@@ -48,12 +48,6 @@ module.exports = {
 				password: hashed,
 			})
 			const saved = await user.save();
-			// After registering the user, their tokens are generated here so they
-			// are automatically logged in on account creation.
-			const accessToken = tokens.generateAccessToken(user);
-			const refreshToken = tokens.generateRefreshToken(user);
-			res.cookie('refresh-token', refreshToken, { httpOnly: true , sameSite: 'None', secure: true}); 
-			res.cookie('access-token', accessToken, { httpOnly: true , sameSite: 'None', secure: true}); 
 			return user;
 		},
 		update: async (_, args, { res }) => {

@@ -1,3 +1,17 @@
+.navbarDirections {
+    position:absolute;
+    color: white;
+    top: 2.5%;
+    left: 22%;
+    display: flex;
+    font-size: 22px;
+    overflow-x: auto;
+}
+
+.navbarClickDiv:hover {
+    cursor: pointer;
+}
+
 .entireSpreadsheet {
     height: 100%;
     width: 100%;

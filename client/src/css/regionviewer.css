@@ -1,3 +1,17 @@
+.navbarDirections {
+    position:absolute;
+    color: white;
+    top: 2.5%;
+    left: 22%;
+    display: flex;
+    font-size: 22px;
+    overflow-x: auto;
+}
+
+.navbarClickDiv:hover {
+    cursor: pointer;
+}
+
 .flexContainerviewer{
     display: flex;
     height: 100%;
@@ -5,14 +19,17 @@
 }
 
 .leftSideViewer{
-    background-color: gray;
     width: 100%;
+
+}
+
+.undoRedoViewer{
 
 }
 
 .undoArrowViewer{
     margin-top: 4%;
-    margin-left: 9%;
+    margin-left: 13%;
     transform: scale(1.7);
     color: white;
     font-size: 24px;
@@ -36,15 +53,16 @@
 }
 
 .flagViewer{
-    height: 200px;
+    height: 300px;
     width: 600px;
-    margin-left: 4%;
+    margin-left: 10%;
     margin-top: 4%;
+    position: relative;
 }
 
 .regionInfoViewer{
-    margin-left: 7%;
-    margin-top: 4%;
+    margin-left: 11%;
+    margin-top: 5%;
 }
 
 .regionNameViewer{
@@ -60,7 +78,15 @@
     font-size: 24px;
     font-weight: bold;
     margin-top: 1%;
+    display: flex;
+}
 
+.clickParentViewer{
+    color:#4f8bb8;
+}
+
+.clickParentViewer:hover {
+    cursor: pointer;
 }
 
 .regionCapitalViewer{
@@ -88,15 +114,42 @@
 }
 
 .rightSideViewer{
-    background-color: aqua;
     width: 100%;
 
 }
 
 .regionLandmarksHeader{
-
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+    margin-top: 4%;
+    margin-left: 30%;
 }
 
 .regionLandmarksBox{
+    width: 80%;
+    height: 65%;
+    margin-top: 2%;
+    margin-left: 3%;
+    background-color: black;
 
+}
+
+.regionLandmarksListViewer{
+    height: 100%;
+
+}
+
+.regionLandmarksAddViewer{
+
+}
+
+.plusViewer{
+    transform: scale(1.9);
+    color: #48c526;
+    font-size: 24px;
+}
+
+.plusViewer:hover {
+    cursor: pointer;
 }
