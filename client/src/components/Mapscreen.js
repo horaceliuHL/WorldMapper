@@ -26,6 +26,7 @@ const Mapscreen = (props) => {
     const [AddMap] 			= useMutation(mutations.ADD_MAP);
     const [DeleteMap] 			= useMutation(mutations.DELETE_MAP);
     const [UpdateMapField] = useMutation(mutations.UPDATE_MAP_FIELD)
+    const [QuickModifyMap] = useMutation(mutations.QUICK_MODIFY_MAP)
     const [newMapName, setNewMapName] = useState('')
 
     const { loading, error, data, refetch } = useQuery(GET_DB_MAPS);
@@ -136,6 +137,7 @@ const Mapscreen = (props) => {
                     mapsList && mapsList.map(map => (
                         <div className="flex1">
                             <div className="eachMap" onClick={() => {
+                                QuickModifyMap({ variables: { _id: map._id }, refetchQueries: [{ query: GET_DB_MAPS }] });
                                 history.push('/' + map._id);
                             }}>{map.name}</div>
                             <CreateIcon className="creMap material-icons"

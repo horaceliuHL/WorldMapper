@@ -11,7 +11,9 @@ module.exports = {
 		getAllMaps: async (_, __, { req }) => {
 			const _id = new ObjectId(req.userId);
 			if(!_id) { return([])};
-			const maps = await Map.find({owner: _id});
+			let maps = await Map.find({owner: _id});
+			maps = maps.sort((a, b) => b.updatedAt - a.updatedAt)
+			console.log(maps[0].updatedAt)
 			if(maps) return (maps);
 
 		},
@@ -54,6 +56,15 @@ module.exports = {
 		},
 	},
 	Mutation: {
+		quickModifyMap: async (_, args) => {
+			const { _id } = args;
+			const objectId = new ObjectId(_id);
+			const map = await Map.findOne({_id: objectId});
+			const updated = await Map.updateOne({_id: objectId}, {name: map.name});
+			if (updated) return true
+			else return false
+
+		},
 		addMap: async (_, args) => {
 			const { map } = args;
 			let objectId = new ObjectId();

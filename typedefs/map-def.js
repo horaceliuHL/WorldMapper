@@ -27,6 +27,7 @@ const typeDefs = gql `
 		getAllParentRegions(_id: String): [ParentInput]
 	}
 	extend type Mutation {
+		quickModifyMap(_id: String): Boolean
 		addMap(map: MapInput!): String
 		deleteMap(_id: String!): Boolean
 		updateMapField(_id: String!, field: String!, value: String!): String

@@ -76,6 +76,12 @@ export const LOGOUT = gql`
 // 	}
 // `;
 
+export const QUICK_MODIFY_MAP = gql`
+	mutation QuickModifyMap($_id: String!) {
+		quickModifyMap(_id: $_id)
+	}
+`;
+
 export const ADD_MAP = gql`
 	mutation AddMap($map: MapInput!) {
 		addMap(map: $map) 
