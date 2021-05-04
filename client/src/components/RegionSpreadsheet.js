@@ -28,6 +28,10 @@ const RegionSpreadsheet = (props) => {
     const [DeleteRegion] 			= useMutation(mutations.DELETE_REGION);
     const [deleteRegionId, setDeleteRegionId] = useState('')
 
+    const [editName, setEditName] = useState(false);
+    const [editCapital, setEditCapital] = useState(false);
+    const [editLeader, setEditLeader] = useState(false);
+
     let clickOrEdit = {
         clicked: 0,
         editRegionName: false,
@@ -115,6 +119,18 @@ const RegionSpreadsheet = (props) => {
 		refetch();
     }
 
+    const saveNameChange = (e) => {
+        setEditName(false)
+    }
+
+    const saveCapitalChange = (e) => {
+        setEditCapital(false)
+    }
+
+    const saveLeaderChange = (e) => {
+        setEditLeader(false)
+    }
+
     return(
         <>
         <NavbarOptions
@@ -161,21 +177,38 @@ const RegionSpreadsheet = (props) => {
                                 toggleShowUpdate(false)
                                 toggleShowDelete(!showDelete)
                             }}><CloseIcon className="regionItemCloseIconSpreadsheet1"></CloseIcon></div>
-                            <div className="regionItemNameSpreadsheet" onClick={() => {
-                                clickOrEdit.clicked = clickOrEdit.clicked + 1
-                                setTimeout(() => {
-                                    if (clickOrEdit.clicked === 1){
-                                        history.push("/" + region._id)
-                                    } else if (clickOrEdit.clicked === 2){
-                                        console.log("double clicked!!")
-                                    }
-                                    clickOrEdit.clicked = 0
-                                }, 400)
-                            }}>{region.name}</div>
-                            <div className="regionItemCapitalSpreadsheet" onDoubleClick={() => {
-                                console.log("couble asdf")
-                            }}>{region.capital}</div>
-                            <div className="regionItemLeaderSpreadsheet">{region.leader}</div>
+                            {
+                                (editName === true) ? <input className="regionItemNameSpreadsheet1" onBlur={saveNameChange}/>
+                                : <div className="regionItemNameSpreadsheet" onClick={() => {
+                                        clickOrEdit.clicked = clickOrEdit.clicked + 1
+                                        setTimeout(() => {
+                                            if (clickOrEdit.clicked === 1){
+                                                history.push("/" + region._id)
+                                            } else if (clickOrEdit.clicked === 2){
+                                                setEditCapital(false)
+                                                setEditLeader(false)
+                                                setEditName(true)
+                                            }
+                                            clickOrEdit.clicked = 0
+                                        }, 400)
+                                    }}>{region.name}</div>
+                            }
+                            {
+                                (editCapital === true) ? <input className="regionItemCapitalSpreadsheet1" onBlur={saveCapitalChange}/>
+                                :  <div className="regionItemCapitalSpreadsheet" onDoubleClick={() => {
+                                        setEditCapital(true)
+                                        setEditName(false)
+                                        setEditLeader(false)
+                                    }}>{region.capital}</div>
+                            }
+                            {
+                                (editLeader === true) ? <input className="regionItemLeaderSpreadsheet1" onBlur={saveLeaderChange}/>
+                                : <div className="regionItemLeaderSpreadsheet" onDoubleClick={() => {
+                                        setEditCapital(false)
+                                        setEditName(false)
+                                        setEditLeader(true)
+                                    }}>{region.leader}</div>
+                            }
                             <div className="regionItemFlagSpreadsheet">{region.flag}</div>
                             <div className="regionItemLandmarksSpreadsheet" onClick={() => {
                                 history.push("/viewer/" + region._id);
