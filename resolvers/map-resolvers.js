@@ -13,7 +13,6 @@ module.exports = {
 			if(!_id) { return([])};
 			let maps = await Map.find({owner: _id});
 			maps = maps.sort((a, b) => b.updatedAt - a.updatedAt)
-			console.log(maps[0].updatedAt)
 			if(maps) return (maps);
 
 		},
