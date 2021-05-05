@@ -53,6 +53,17 @@ module.exports = {
 			parentInfo.reverse()
 			return parentInfo
 		},
+		getAllChildrenRegions: async (_, args) => {
+			const { _id } = args;
+			const objectId = new ObjectId(_id);
+			let findParent = await Region.findOne({_id: objectId})
+			if (findParent === null) findParent = await Map.findOne({_id: objectId})
+			let childrenRegions = []
+			for (let i = 0; i < findParent.regions.length; i++){
+				childrenRegions[i] = await Region.findOne({_id: new ObjectId(findParent.regions[i])})
+			}
+			return childrenRegions
+		},
 	},
 	Mutation: {
 		quickModifyMap: async (_, args) => {
@@ -146,51 +157,179 @@ module.exports = {
 				const updated = await Map.updateOne({_id: actualId}, {regions: updatedChildren});
 			}
 			const deleted = await Region.deleteOne({_id: objectId});
-			if(deleted) return true;
-			else return false;
+			if(deleted) return actualRegion;
+			else return actualRegion;
 		},
-	// 	/** 
-	// 	 	@param 	 {object} args - a todolist objectID and item objectID
-	// 		@returns {array} the updated item array on success or the initial 
-	// 						 array on failure
-	// 	**/
-	// 	deleteItem: async (_, args) => {
-	// 		const  { _id, itemId } = args;
-	// 		const listId = new ObjectId(_id);
-	// 		const found = await Todolist.findOne({_id: listId});
-	// 		let listItems = found.items;
-	// 		listItems = listItems.filter(item => item._id.toString() !== itemId);
-	// 		const updated = await Todolist.updateOne({_id: listId}, { items: listItems })
-	// 		if(updated) return (listItems);
-	// 		else return (found.items);
-
-	// 	},
-	// 	/** 
-	// 		@param	 {object} args - a todolist objectID, an item objectID, field, and
-	// 								 update value. Flag is used to interpret the completed 
-	// 								 field,as it uses a boolean instead of a string
-	// 		@returns {array} the updated item array on success, or the initial item array on failure
-	// 	**/
-	// 	updateItemField: async (_, args) => {
-	// 		const { _id, itemId, field,  flag } = args;
-	// 		let { value } = args
-	// 		const listId = new ObjectId(_id);
-	// 		const found = await Todolist.findOne({_id: listId});
-	// 		let listItems = found.items;
-	// 		if(flag === 1) {
-	// 			if(value === 'complete') { value = true; }
-	// 			if(value === 'incomplete') { value = false; }
-	// 		}
-	// 		listItems.map(item => {
-	// 			if(item._id.toString() === itemId) {	
-					
-	// 				item[field] = value;
-	// 			}
-	// 		});
-	// 		const updated = await Todolist.updateOne({_id: listId}, { items: listItems })
-	// 		if(updated) return (listItems);
-	// 		else return (found.items);
-	// 	},
+		editRegion: async (_, args) => {
+			const { _id, field, value } = args;
+			const objectId = new ObjectId(_id)
+			let updated;
+			if (field === 'name') updated = await Region.updateOne({_id: objectId}, {name: value});
+			else if (field === 'capital') updated = await Region.updateOne({_id: objectId}, {capital: value});
+			else if (field === 'leader') updated = await Region.updateOne({_id: objectId}, {leader: value});
+			if (updated) return true
+			else return false
+		},
+		sortName: async (_, args) => {
+			const { _id } = args;
+			const listId = new ObjectId(_id);
+			let checkWhere = false;
+			let found = await Region.findOne({_id: listId});
+			if (found === null) {
+				found = await Map.findOne({_id: listId});
+				checkWhere = true;
+			}
+			let listItems = found.regions;
+			let listItemsCheck = [];
+			for (let i = 0; i < listItems.length; i++){
+				let findRegion = await Region.findOne({_id: new ObjectId(listItems[i])});
+				let tempItem = {
+					_id: findRegion._id,
+					id: findRegion.id,
+					parentId: findRegion.parentId,
+					name: findRegion.name,
+					capital: findRegion.capital,
+					leader: findRegion.leader,
+					flag: findRegion.flag,
+					landmarks: findRegion.landmarks,
+					regions: findRegion.regions,
+				}
+				listItemsCheck[i] = tempItem
+			}
+			listItemsCheck = listItemsCheck.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
+			let sorted = true;
+			for (let i = 0; i < listItems.length; i++){
+				if (listItems[i] != listItemsCheck[i]._id) sorted = false;
+			}
+			if (sorted === true) listItems = listItemsCheck.reverse().map(a => a._id);
+			else listItems = listItemsCheck.map(a => a._id)
+			let updated;
+			if (checkWhere === true) updated = await Map.updateOne({_id: listId}, { regions: listItems })
+			else updated = await Region.updateOne({_id: listId}, { regions: listItems })
+			if (updated) return (listItems);
+			else return (found.regions)
+		},
+		unsortName: async (_, args) => {
+			const { _id, list } = args;
+			const objectId = new ObjectId(_id);
+			let checkWhere = false;
+			let found = await Region.findOne({_id: objectId});
+			if (found === null) {
+				found = await Map.findOne({_id: objectId});
+				checkWhere = true;
+			}
+			if (checkWhere === true) updated = await Map.updateOne({_id: objectId}, { regions: list })
+			else updated = await Region.updateOne({_id: objectId}, { regions: list })
+			if (updated) return (list);
+			else return (found.regions);
+		},
+		sortCapital: async (_, args) => {
+			const { _id } = args;
+			const listId = new ObjectId(_id);
+			let checkWhere = false;
+			let found = await Region.findOne({_id: listId});
+			if (found === null) {
+				found = await Map.findOne({_id: listId});
+				checkWhere = true;
+			}
+			let listItems = found.regions;
+			let listItemsCheck = [];
+			for (let i = 0; i < listItems.length; i++){
+				let findRegion = await Region.findOne({_id: new ObjectId(listItems[i])});
+				let tempItem = {
+					_id: findRegion._id,
+					id: findRegion.id,
+					parentId: findRegion.parentId,
+					name: findRegion.name,
+					capital: findRegion.capital,
+					leader: findRegion.leader,
+					flag: findRegion.flag,
+					landmarks: findRegion.landmarks,
+					regions: findRegion.regions,
+				}
+				listItemsCheck[i] = tempItem
+			}
+			listItemsCheck = listItemsCheck.sort((a, b) => a.capital.toLowerCase().localeCompare(b.capital.toLowerCase()))
+			let sorted = true;
+			for (let i = 0; i < listItems.length; i++){
+				if (listItems[i] != listItemsCheck[i]._id) sorted = false;
+			}
+			if (sorted === true) listItems = listItemsCheck.reverse().map(a => a._id);
+			else listItems = listItemsCheck.map(a => a._id)
+			let updated;
+			if (checkWhere === true) updated = await Map.updateOne({_id: listId}, { regions: listItems })
+			else updated = await Region.updateOne({_id: listId}, { regions: listItems })
+			if (updated) return (listItems);
+			else return (found.regions)
+		},
+		unsortCapital: async (_, args) => {
+			const { _id, list } = args;
+			const objectId = new ObjectId(_id);
+			let checkWhere = false;
+			let found = await Region.findOne({_id: objectId});
+			if (found === null) {
+				found = await Map.findOne({_id: objectId});
+				checkWhere = true;
+			}
+			if (checkWhere === true) updated = await Map.updateOne({_id: objectId}, { regions: list })
+			else updated = await Region.updateOne({_id: objectId}, { regions: list })
+			if (updated) return (list);
+			else return (found.regions);
+		},
+		sortLeader: async (_, args) => {
+			const { _id } = args;
+			const listId = new ObjectId(_id);
+			let checkWhere = false;
+			let found = await Region.findOne({_id: listId});
+			if (found === null) {
+				found = await Map.findOne({_id: listId});
+				checkWhere = true;
+			}
+			let listItems = found.regions;
+			let listItemsCheck = [];
+			for (let i = 0; i < listItems.length; i++){
+				let findRegion = await Region.findOne({_id: new ObjectId(listItems[i])});
+				let tempItem = {
+					_id: findRegion._id,
+					id: findRegion.id,
+					parentId: findRegion.parentId,
+					name: findRegion.name,
+					capital: findRegion.capital,
+					leader: findRegion.leader,
+					flag: findRegion.flag,
+					landmarks: findRegion.landmarks,
+					regions: findRegion.regions,
+				}
+				listItemsCheck[i] = tempItem
+			}
+			listItemsCheck = listItemsCheck.sort((a, b) => a.leader.toLowerCase().localeCompare(b.leader.toLowerCase()))
+			let sorted = true;
+			for (let i = 0; i < listItems.length; i++){
+				if (listItems[i] != listItemsCheck[i]._id) sorted = false;
+			}
+			if (sorted === true) listItems = listItemsCheck.reverse().map(a => a._id);
+			else listItems = listItemsCheck.map(a => a._id)
+			let updated;
+			if (checkWhere === true) updated = await Map.updateOne({_id: listId}, { regions: listItems })
+			else updated = await Region.updateOne({_id: listId}, { regions: listItems })
+			if (updated) return (listItems);
+			else return (found.regions)
+		},
+		unsortLeader: async (_, args) => {
+			const { _id, list } = args;
+			const objectId = new ObjectId(_id);
+			let checkWhere = false;
+			let found = await Region.findOne({_id: objectId});
+			if (found === null) {
+				found = await Map.findOne({_id: objectId});
+				checkWhere = true;
+			}
+			if (checkWhere === true) updated = await Map.updateOne({_id: objectId}, { regions: list })
+			else updated = await Region.updateOne({_id: objectId}, { regions: list })
+			if (updated) return (list);
+			else return (found.regions);
+		},
+	
 	// 	/**
 	// 		@param 	 {object} args - contains list id, item to swap, and swap direction
 	// 		@returns {array} the reordered item array on success, or initial ordering on failure
@@ -222,34 +361,7 @@ module.exports = {
 	// 		return (found.items);
 
 	// 	},
-    // sortTasks: async (_, args) => {
-    //   const { _id } = args;
-    //   const listId = new ObjectId(_id);
-	// 		const found = await Todolist.findOne({_id: listId});
-	// 		let listItems = found.items;
-    //   let listItemsCheck = [];
-    //   for (let i = 0; i < listItems.length; i++){
-    //     let tempItem = {
-    //       _id: listItems[i]._id,
-    //       id: listItems[i].id,
-    //       description: listItems[i].description,
-    //       due_date: listItems[i].due_date,
-    //       assigned_to: listItems[i].assigned_to,
-    //       completed: listItems[i].completed,
-    //     }
-    //     listItemsCheck[i] = tempItem
-    //   }
-    //   listItemsCheck = listItemsCheck.sort((a, b) => a.description.toLowerCase().localeCompare(b.description.toLowerCase()))
-    //   let sorted = true;
-    //   for (let i = 0; i < listItems.length; i++){
-    //     if (listItems[i].id !== listItemsCheck[i].id) sorted = false;
-    //   }
-    //   if (sorted === true) listItems = listItemsCheck.reverse();
-    //   else listItems = listItemsCheck
-    //   const updated = await Todolist.updateOne({_id: listId}, { items: listItems })
-    //   if (updated) return (listItems);
-    //   else return (found.items)
-    // },
+    
     // unsortTasks: async (_, args) => {
     //   const { _id, list } = args;
     //   const listId = new ObjectId(_id);

@@ -6,12 +6,18 @@ import DelRegion from './modals/DelRegion.js';
 import AddIcon from '@material-ui/icons/Add';
 import UndoIcon from '@material-ui/icons/Undo';
 import RedoIcon from '@material-ui/icons/Redo';
-import CloseIcon from '@material-ui/icons/Close';
 import { useMutation, useQuery } 		from '@apollo/client';
-import { GET_DB_REGIONS, GET_MAP_BY_ID, GET_ALL_PARENT_REGIONS} 				from '../cache/queries';
+import { GET_DB_REGIONS, GET_MAP_BY_ID, GET_ALL_PARENT_REGIONS, GET_CHILDREN_REGIONS} 				from '../cache/queries';
 import * as mutations 					from '../cache/mutations';
+import { 
+	AddRegion_Transaction, 
+    DeleteRegion_Transaction,
+    EditItem_Transaction,
+    ReorderTasks_Transaction,
+  jsTPS} 				from '../utils/jsTPS';
 
 import '../css/regionspreadsheet.css';
+import SpreadsheetItems from './SpreadsheetItems.js';
 
 
 const RegionSpreadsheet = (props) => {
@@ -28,14 +34,14 @@ const RegionSpreadsheet = (props) => {
     const [DeleteRegion] 			= useMutation(mutations.DELETE_REGION);
     const [deleteRegionId, setDeleteRegionId] = useState('')
 
-    const [editName, setEditName] = useState(false);
-    const [editCapital, setEditCapital] = useState(false);
-    const [editLeader, setEditLeader] = useState(false);
+    const [EditRegion] = useMutation(mutations.EDIT_REGION)
+    const [SortName] = useMutation(mutations.SORT_NAME)
+    const [UnsortName] = useMutation(mutations.UNSORT_NAME)
+    const [SortCapital] = useMutation(mutations.SORT_CAPITAL)
+    const [UnsortCapital] = useMutation(mutations.UNSORT_CAPITAL)
+    const [SortLeader] = useMutation(mutations.SORT_LEADER)
+    const [UnsortLeader] = useMutation(mutations.UNSORT_LEADER)
 
-    let clickOrEdit = {
-        clicked: 0,
-        editRegionName: false,
-    }
 
     const { regionId } = useParams()
 
@@ -57,30 +63,55 @@ const RegionSpreadsheet = (props) => {
         if (data2.getAllParentRegions) parentRegions = data2.getAllParentRegions; 
     }
 
-    const { loading, error, data, refetch } = useQuery(GET_DB_REGIONS);
+    const { loading:loading3, error:error3, data:data3, refetch:refetch3} = useQuery(GET_DB_REGIONS);
+    if(loading3) { console.log(loading3, 'loading'); }
+	if(error3) { console.log(error3, 'error'); }
+	if(data3) { 
+        let tempList = data3.getAllRegions; 
+        if (actualRegion.name === ''){
+            actualRegion = tempList.find(region => region._id === regionId)
+        }  
+    }
+
+    const { loading, error, data, refetch  } = useQuery(GET_CHILDREN_REGIONS, {
+        variables: {_id: regionId},
+    });
     if(loading) { console.log(loading, 'loading'); }
 	if(error) { console.log(error, 'error'); }
 	if(data) { 
-        regionsList = data.getAllRegions; 
-        if (actualRegion.name === ''){
-            actualRegion = regionsList.find(region => region._id === regionId)
-        }
-        regionsList = regionsList.filter(region => {
-            return region.parentId === regionId;
-        });   
+        regionsList = data.getAllChildrenRegions; 
     }
+
+    
 
     const auth = props.user === null ? false : true;
 
     const refetchRegions = async (refetch) => {
 		const { loading, error, data } = await refetch();
 		if (data) {
-			regionsList = data.getAllRegions;
-            regionsList = regionsList.filter(region => {
-                return region.parentId === regionId;
-            });   
+			regionsList = data.getAllChildrenRegions;
 		}
 	}
+
+    useEffect(() => {
+        window.addEventListener('keydown', handlePressed);
+        return () => {
+            window.removeEventListener('keydown', handlePressed);
+        }
+    })
+
+    useEffect(() => {
+        props.tps.clearAllTransactions();
+    }, [])
+    
+    const handlePressed = (e) => {
+        if(e.key === 'z' && e.ctrlKey === true){
+            tpsUndo()
+        } 
+        else if(e.key === 'y' && e.ctrlKey === true){
+            tpsRedo()
+        } 
+    }
 
     const setShowUpdate = () => {
         toggleShowDelete(false)
@@ -91,6 +122,32 @@ const RegionSpreadsheet = (props) => {
         toggleShowUpdate(false)
         toggleShowDelete(!showDelete)
     }
+    
+    const setShowDelete1 = (_id) => {
+        setDeleteRegionId(_id)
+        toggleShowUpdate(false)
+        toggleShowDelete(!showDelete)
+    }
+
+    const tpsUndo = async () => {
+		const retVal = await props.tps.undoTransaction();
+        const hasUndoVal = await props.tps.hasTransactionToUndo();
+        const hasRedoVal = await props.tps.hasTransactionToRedo();
+        // showHasTransUndo(hasUndoVal);
+        // showHasTransRedo(hasRedoVal)
+		refetchRegions(refetch);
+		return retVal;
+	}
+
+	const tpsRedo = async () => {
+		const retVal = await props.tps.doTransaction();
+        const hasUndoVal = await props.tps.hasTransactionToUndo();
+        const hasRedoVal = await props.tps.hasTransactionToRedo();
+        // showHasTransUndo(hasUndoVal);
+        // showHasTransRedo(hasRedoVal)
+		refetchRegions(refetch);
+		return retVal;
+	}
 
     const addRegion = async () => {
 		let lastID = 1;
@@ -110,25 +167,51 @@ const RegionSpreadsheet = (props) => {
             landmarks: [],
             regions: [],
 		};
-        const { data } = await AddRegion({ variables: { region: newRegion }, refetchQueries: [{ query: GET_DB_REGIONS }] });
-        await refetchRegions(refetch);
+        let transaction = new AddRegion_Transaction(newRegion.id, newRegion, AddRegion, DeleteRegion);
+		props.tps.addTransaction(transaction);
+		tpsRedo();
     }
 
     const deleteRegion = async (_id) => {
-        DeleteRegion({ variables: { _id: _id }, refetchQueries: [{ query: GET_DB_REGIONS }] });
-		refetch();
+        let transaction = new DeleteRegion_Transaction(_id, {}, AddRegion, DeleteRegion);
+		props.tps.addTransaction(transaction);
+		tpsRedo();
     }
 
-    const saveNameChange = (e) => {
-        setEditName(false)
+    const editStuff = (id, field, old, updated) => {
+        let transaction = new EditItem_Transaction(id, field, old, updated, EditRegion);
+        props.tps.addTransaction(transaction);
+        tpsRedo();
     }
 
-    const saveCapitalChange = (e) => {
-        setEditCapital(false)
+    const reorderName = () => {
+        let items = []
+        for (let i = 0; i < regionsList.length; i++){
+            items[i] = regionsList[i]._id
+        }
+        let transaction = new ReorderTasks_Transaction(regionId, items, SortName, UnsortName);
+        props.tps.addTransaction(transaction);
+        tpsRedo();
     }
 
-    const saveLeaderChange = (e) => {
-        setEditLeader(false)
+    const reorderCapital = () => {
+        let items = []
+        for (let i = 0; i < regionsList.length; i++){
+            items[i] = regionsList[i]._id
+        }
+        let transaction = new ReorderTasks_Transaction(regionId, items, SortCapital, UnsortCapital);
+        props.tps.addTransaction(transaction);
+        tpsRedo();
+    }
+
+    const reorderLeader = () => {
+        let items = []
+        for (let i = 0; i < regionsList.length; i++){
+            items[i] = regionsList[i]._id
+        }
+        let transaction = new ReorderTasks_Transaction(regionId, items, SortLeader, UnsortLeader);
+        props.tps.addTransaction(transaction);
+        tpsRedo();
     }
 
     return(
@@ -152,8 +235,8 @@ const RegionSpreadsheet = (props) => {
         <div className="entireSpreadsheet">
             <div className="flexSpreadsheet">
                 <AddIcon className="plusSpreadsheet" onClick={addRegion}></AddIcon>
-                <UndoIcon className="undoArrowSpreadsheet"></UndoIcon>
-                <RedoIcon className="redoArrowSpreadsheet"></RedoIcon>
+                <UndoIcon className="undoArrowSpreadsheet" onClick={tpsUndo}></UndoIcon>
+                <RedoIcon className="redoArrowSpreadsheet" onClick={tpsRedo}></RedoIcon>
                 <div className="currentRegionSpreadsheet">Region Name: </div>
                 {
                     actualRegion ? <div className="currentRegionNameSpreadsheet">{actualRegion.name}</div>
@@ -163,58 +246,15 @@ const RegionSpreadsheet = (props) => {
             </div>
             <div className="spreadsheetOverall">
                 <div className="headerSpreadsheet">
-                    <div className="headerNameSpreadsheet">Name &#10225;</div>
-                    <div className="headerCapitalSpreadsheet">Capital &#10225;</div>
-                    <div className="headerLeaderSpreadsheet">Leader &#10225;</div>
+                    <div className="headerNameSpreadsheet" onClick={reorderName}>Name &#10225;</div>
+                    <div className="headerCapitalSpreadsheet" onClick={reorderCapital}>Capital &#10225;</div>
+                    <div className="headerLeaderSpreadsheet" onClick={reorderLeader}>Leader &#10225;</div>
                     <div className="headerFlagSpreadsheet">Flag &#10225;</div>
                     <div className="headerLandmarksSpreadsheet">Landmarks &#10225;</div>
                 </div>
                 <div className="itemsSpreadsheet">{
                     regionsList && regionsList.map(region => (
-                        <div className="regionItemSpreadsheet">
-                            <div className="regionItemCloseIconSpreadsheet" onClick={() => {
-                                setDeleteRegionId(region._id)
-                                toggleShowUpdate(false)
-                                toggleShowDelete(!showDelete)
-                            }}><CloseIcon className="regionItemCloseIconSpreadsheet1"></CloseIcon></div>
-                            {
-                                (editName === true) ? <input className="regionItemNameSpreadsheet1" onBlur={saveNameChange}/>
-                                : <div className="regionItemNameSpreadsheet" onClick={() => {
-                                        clickOrEdit.clicked = clickOrEdit.clicked + 1
-                                        setTimeout(() => {
-                                            if (clickOrEdit.clicked === 1){
-                                                history.push("/" + region._id)
-                                            } else if (clickOrEdit.clicked === 2){
-                                                setEditCapital(false)
-                                                setEditLeader(false)
-                                                setEditName(true)
-                                            }
-                                            clickOrEdit.clicked = 0
-                                        }, 400)
-                                    }}>{region.name}</div>
-                            }
-                            {
-                                (editCapital === true) ? <input className="regionItemCapitalSpreadsheet1" onBlur={saveCapitalChange}/>
-                                :  <div className="regionItemCapitalSpreadsheet" onDoubleClick={() => {
-                                        setEditCapital(true)
-                                        setEditName(false)
-                                        setEditLeader(false)
-                                    }}>{region.capital}</div>
-                            }
-                            {
-                                (editLeader === true) ? <input className="regionItemLeaderSpreadsheet1" onBlur={saveLeaderChange}/>
-                                : <div className="regionItemLeaderSpreadsheet" onDoubleClick={() => {
-                                        setEditCapital(false)
-                                        setEditName(false)
-                                        setEditLeader(true)
-                                    }}>{region.leader}</div>
-                            }
-                            <div className="regionItemFlagSpreadsheet">{region.flag}</div>
-                            <div className="regionItemLandmarksSpreadsheet" onClick={() => {
-                                history.push("/viewer/" + region._id);
-                            }}>{region.landmarks}</div>
-                        </div>
-                        
+                        <SpreadsheetItems region={region} setShowDelete1={setShowDelete1} editStuff={editStuff}/>    
                     ))
                 }</div>
             </div>

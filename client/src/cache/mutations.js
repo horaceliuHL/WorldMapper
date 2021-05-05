@@ -108,7 +108,59 @@ export const ADD_REGION = gql`
 
 export const DELETE_REGION = gql`
 	mutation DeleteRegion($_id: String!) {
-		deleteRegion(_id: $_id)
+		deleteRegion(_id: $_id){
+			_id
+			id
+			parentId
+			name
+			capital
+			leader
+			flag
+			landmarks
+			regions
+		}
+	}
+`;
+
+export const EDIT_REGION = gql`
+  mutation EditRegion($_id: String, $field: String, $value: String) {
+    editRegion(_id: $_id, field: $field, value: $value)
+  }
+`;
+
+export const SORT_NAME = gql`
+	mutation SortName($_id: String) {
+		sortName(_id: $_id)
+	}
+`;
+
+export const UNSORT_NAME = gql`
+	mutation UnsortName($_id: String, $list: [String]) {
+		unsortName(_id: $_id, list: $list)
+	}
+`;
+
+export const SORT_CAPITAL = gql`
+	mutation SortCapital($_id: String) {
+		sortCapital(_id: $_id)
+	}
+`;
+
+export const UNSORT_CAPITAL = gql`
+	mutation UnsortCapital($_id: String, $list: [String]) {
+		unsortCapital(_id: $_id, list: $list)
+	}
+`;
+
+export const SORT_LEADER = gql`
+	mutation SortLeader($_id: String) {
+		sortLeader(_id: $_id)
+	}
+`;
+
+export const UNSORT_LEADER = gql`
+	mutation UnsortLeader($_id: String, $list: [String]) {
+		unsortLeader(_id: $_id, list: $list)
 	}
 `;
 
