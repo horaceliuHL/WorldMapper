@@ -15,9 +15,21 @@ const SpreadsheetItems = (props) => {
     }
 
     const changeKeyPlace = (e) => {
-        if (editName !== props.region.name) props.editStuff(props.region._id, 'name', props.region.name, editName)
-        else if (editCapital !== props.region.capital) props.editStuff(props.region._id, 'capital', props.region.capital, editCapital)
-        else if (editLeader !== props.region.leader) props.editStuff(props.region._id, 'leader', props.region.leader, editLeader)
+        if (editName !== props.region.name) {
+            let temp = editName
+            if (temp === '') temp = 'Name'
+            props.editStuff(props.region._id, 'name', props.region.name, temp)
+        }
+        else if (editCapital !== props.region.capital){
+            let temp = editCapital
+            if (temp === '') temp = 'Capital'
+            props.editStuff(props.region._id, 'capital', props.region.capital, temp)
+        } 
+        else if (editLeader !== props.region.leader){
+            let temp = editLeader
+            if (temp === '') temp = 'Leader'
+            props.editStuff(props.region._id, 'leader', props.region.leader, temp)
+        } 
         if (e.key === 'ArrowUp'){
             props.changing(props.arrowV - 1, props.arrowH)
         } else if (e.key === 'ArrowDown'){

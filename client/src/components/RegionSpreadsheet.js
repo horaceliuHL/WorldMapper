@@ -37,6 +37,9 @@ const RegionSpreadsheet = (props) => {
     const [arrowH, setArrowH] = useState(-1);
     const [arrowV, setArrowV] = useState(-1);
 
+    const [hasTransUndo, showHasTransUndo] = useState(false)
+    const [hasTransRedo, showHasTransRedo] = useState(false)
+
     const [EditRegion] = useMutation(mutations.EDIT_REGION)
     const [SortName] = useMutation(mutations.SORT_NAME)
     const [UnsortName] = useMutation(mutations.UNSORT_NAME)
@@ -143,8 +146,8 @@ const RegionSpreadsheet = (props) => {
 		const retVal = await props.tps.undoTransaction();
         const hasUndoVal = await props.tps.hasTransactionToUndo();
         const hasRedoVal = await props.tps.hasTransactionToRedo();
-        // showHasTransUndo(hasUndoVal);
-        // showHasTransRedo(hasRedoVal)
+        showHasTransUndo(hasUndoVal);
+        showHasTransRedo(hasRedoVal)
 		refetchRegions(refetch);
 		return retVal;
 	}
@@ -153,8 +156,8 @@ const RegionSpreadsheet = (props) => {
 		const retVal = await props.tps.doTransaction();
         const hasUndoVal = await props.tps.hasTransactionToUndo();
         const hasRedoVal = await props.tps.hasTransactionToRedo();
-        // showHasTransUndo(hasUndoVal);
-        // showHasTransRedo(hasRedoVal)
+        showHasTransUndo(hasUndoVal);
+        showHasTransRedo(hasRedoVal)
 		refetchRegions(refetch);
 		return retVal;
 	}
@@ -245,8 +248,14 @@ const RegionSpreadsheet = (props) => {
         <div className="entireSpreadsheet">
             <div className="flexSpreadsheet">
                 <AddIcon className="plusSpreadsheet" onClick={addRegion}></AddIcon>
-                <UndoIcon className="undoArrowSpreadsheet" onClick={tpsUndo}></UndoIcon>
-                <RedoIcon className="redoArrowSpreadsheet" onClick={tpsRedo}></RedoIcon>
+                {
+                    hasTransUndo ? <UndoIcon className="undoArrowSpreadsheet" onClick={tpsUndo}></UndoIcon>
+                    : <div></div>
+                }
+                {
+                    hasTransRedo ? <RedoIcon className="redoArrowSpreadsheet" onClick={tpsRedo}></RedoIcon>
+                    : <div></div>
+                }
                 <div className="currentRegionSpreadsheet">Region Name: </div>
                 {
                     actualRegion ? <div className="currentRegionNameSpreadsheet">{actualRegion.name}</div>
