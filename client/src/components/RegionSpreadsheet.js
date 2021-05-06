@@ -34,6 +34,9 @@ const RegionSpreadsheet = (props) => {
     const [DeleteRegion] 			= useMutation(mutations.DELETE_REGION);
     const [deleteRegionId, setDeleteRegionId] = useState('')
 
+    const [arrowH, setArrowH] = useState(-1);
+    const [arrowV, setArrowV] = useState(-1);
+
     const [EditRegion] = useMutation(mutations.EDIT_REGION)
     const [SortName] = useMutation(mutations.SORT_NAME)
     const [UnsortName] = useMutation(mutations.UNSORT_NAME)
@@ -110,7 +113,14 @@ const RegionSpreadsheet = (props) => {
         } 
         else if(e.key === 'y' && e.ctrlKey === true){
             tpsRedo()
-        } 
+        }
+    }
+
+    const changing = (vertical, horizontal) => {
+        if (vertical >= 0 && vertical < regionsList.length) setArrowV(vertical);
+        if (horizontal >= 1 && horizontal <= 3) setArrowH(horizontal);
+        if (vertical === -2) setArrowV(vertical)
+        if (horizontal === -2) setArrowH(horizontal)
     }
 
     const setShowUpdate = () => {
@@ -253,8 +263,10 @@ const RegionSpreadsheet = (props) => {
                     <div className="headerLandmarksSpreadsheet">Landmarks &#10225;</div>
                 </div>
                 <div className="itemsSpreadsheet">{
-                    regionsList && regionsList.map(region => (
-                        <SpreadsheetItems region={region} setShowDelete1={setShowDelete1} editStuff={editStuff}/>    
+                    regionsList && regionsList.map((region, index) => (
+                        <SpreadsheetItems region={region} setShowDelete1={setShowDelete1} editStuff={editStuff} index={index}
+                            changing={changing} arrowV={arrowV} arrowH={arrowH}
+                        />    
                     ))
                 }</div>
             </div>
