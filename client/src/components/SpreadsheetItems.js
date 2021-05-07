@@ -59,6 +59,7 @@ const SpreadsheetItems = (props) => {
                         clickOrEdit.clicked = clickOrEdit.clicked + 1
                         setTimeout(() => {
                             if (clickOrEdit.clicked === 1){
+                                props.clearAll()
                                 history.push("/" + props.region._id)
                             } else if (clickOrEdit.clicked === 2){
                                 props.changing(props.index, 1)
@@ -93,6 +94,7 @@ const SpreadsheetItems = (props) => {
             }
             <div className="regionItemFlagSpreadsheet">{props.region.flag}</div>
             <div className="regionItemLandmarksSpreadsheet" onClick={() => {
+                props.clearAll();
                 history.push("/viewer/" + props.region._id);
             }}>{props.region.landmarks}</div>
         </div>

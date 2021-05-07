@@ -52,6 +52,12 @@
     cursor: pointer;
 }
 
+.undoArrowSpreadsheetStandin {
+    margin-right: 1%;
+    margin-left: 1%;
+    margin-top: 0.5%;
+}
+
 .redoArrowSpreadsheet {
     transform: scale(1.7);
     color: white;
@@ -62,6 +68,12 @@
 
 .redoArrowSpreadsheet:hover {
     cursor: pointer;
+}
+
+.redoArrowSpreadsheetStandin {
+    margin-right: 1%;
+    margin-left: 1%;
+    margin-top: 0.5%;
 }
 
 .currentRegionSpreadsheet {

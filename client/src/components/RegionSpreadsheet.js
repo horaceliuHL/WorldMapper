@@ -54,7 +54,7 @@ const RegionSpreadsheet = (props) => {
     const { loading:loading1, error:error1, data:data1, refetch:refetch1 } = useQuery(GET_MAP_BY_ID, {
         variables: {_id: regionId},
     });
-    if(loading1) { console.log(loading1, 'loading'); }
+    // if(loading1) { console.log(loading1, 'loading'); }
 	if(error1) { console.log(error1, 'error'); }
 	if(data1) { 
         if (data1.getMapById) actualRegion = data1.getMapById; 
@@ -63,14 +63,14 @@ const RegionSpreadsheet = (props) => {
     const { loading:loading2, error:error2, data:data2, refetch:refetch2 } = useQuery(GET_ALL_PARENT_REGIONS, {
         variables: {_id: regionId},
     });
-    if(loading2) { console.log(loading2, 'loading'); }
+    // if(loading2) { console.log(loading2, 'loading'); }
 	if(error2) { console.log(error2, 'error'); }
 	if(data2) { 
         if (data2.getAllParentRegions) parentRegions = data2.getAllParentRegions; 
     }
 
     const { loading:loading3, error:error3, data:data3, refetch:refetch3} = useQuery(GET_DB_REGIONS);
-    if(loading3) { console.log(loading3, 'loading'); }
+    // if(loading3) { console.log(loading3, 'loading'); }
 	if(error3) { console.log(error3, 'error'); }
 	if(data3) { 
         let tempList = data3.getAllRegions; 
@@ -82,13 +82,11 @@ const RegionSpreadsheet = (props) => {
     const { loading, error, data, refetch  } = useQuery(GET_CHILDREN_REGIONS, {
         variables: {_id: regionId},
     });
-    if(loading) { console.log(loading, 'loading'); }
+    // if(loading) { console.log(loading, 'loading'); }
 	if(error) { console.log(error, 'error'); }
 	if(data) { 
         regionsList = data.getAllChildrenRegions; 
     }
-
-    
 
     const auth = props.user === null ? false : true;
 
@@ -238,8 +236,14 @@ const RegionSpreadsheet = (props) => {
                     <>
                     {
                         (x === parentRegions[parentRegions.length - 1]) ? <div></div>
-                        : (x === parentRegions[0]) ? <div className="navbarClickDiv" onClick={() => history.push('/' + x._id)}>{x.name}</div> 
-                        : <div className="navbarClickDiv" onClick={() => history.push('/' + x._id)}> &nbsp;-&gt; {x.name} </div>
+                        : (x === parentRegions[0]) ? <div className="navbarClickDiv" onClick={() => {
+                            props.tps.clearAllTransactions();
+                            history.push('/' + x._id);
+                            }}>{x.name}</div> 
+                        : <div className="navbarClickDiv" onClick={() => {
+                            props.tps.clearAllTransactions();
+                            history.push('/' + x._id);
+                            }}> &nbsp;-&gt; {x.name} </div>
                     }
                     </>
                 ))
@@ -250,11 +254,11 @@ const RegionSpreadsheet = (props) => {
                 <AddIcon className="plusSpreadsheet" onClick={addRegion}></AddIcon>
                 {
                     hasTransUndo ? <UndoIcon className="undoArrowSpreadsheet" onClick={tpsUndo}></UndoIcon>
-                    : <div></div>
+                    : <div className="undoArrowSpreadsheetStandin"></div>
                 }
                 {
                     hasTransRedo ? <RedoIcon className="redoArrowSpreadsheet" onClick={tpsRedo}></RedoIcon>
-                    : <div></div>
+                    : <div className="redoArrowSpreadsheetStandin"></div>
                 }
                 <div className="currentRegionSpreadsheet">Region Name: </div>
                 {
@@ -272,9 +276,9 @@ const RegionSpreadsheet = (props) => {
                     <div className="headerLandmarksSpreadsheet">Landmarks &#10225;</div>
                 </div>
                 <div className="itemsSpreadsheet">{
-                    regionsList && regionsList.map((region, index) => (
+                    regionsList.length !== 0 && regionsList.map((region, index) => (
                         <SpreadsheetItems region={region} setShowDelete1={setShowDelete1} editStuff={editStuff} index={index}
-                            changing={changing} arrowV={arrowV} arrowH={arrowH}
+                            changing={changing} arrowV={arrowV} arrowH={arrowH} clearAll={() => props.tps.clearAllTransactions()}
                         />    
                     ))
                 }</div>

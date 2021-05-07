@@ -329,171 +329,55 @@ module.exports = {
 			if (updated) return (list);
 			else return (found.regions);
 		},
-	
-	// 	/**
-	// 		@param 	 {object} args - contains list id, item to swap, and swap direction
-	// 		@returns {array} the reordered item array on success, or initial ordering on failure
-	// 	**/
-	// 	reorderItems: async (_, args) => {
-	// 		const { _id, itemId, direction } = args;
-	// 		const listId = new ObjectId(_id);
-	// 		const found = await Todolist.findOne({_id: listId});
-	// 		let listItems = found.items;
-	// 		const index = listItems.findIndex(item => item._id.toString() === itemId);
-	// 		// move selected item visually down the list
-	// 		if(direction === 1 && index < listItems.length - 1) {
-	// 			let next = listItems[index + 1];
-	// 			let current = listItems[index]
-	// 			listItems[index + 1] = current;
-	// 			listItems[index] = next;
-	// 		}
-	// 		// move selected item visually up the list
-	// 		else if(direction === -1 && index > 0) {
-	// 			let prev = listItems[index - 1];
-	// 			let current = listItems[index]
-	// 			listItems[index - 1] = current;
-	// 			listItems[index] = prev;
-	// 		}
-	// 		const updated = await Todolist.updateOne({_id: listId}, { items: listItems })
-	// 		if(updated) return (listItems);
-	// 		// return old ordering if reorder was unsuccessful
-	// 		listItems = found.items;
-	// 		return (found.items);
+		switchParents: async (_, args) => {
+			const { _id, currentParentId, newParentId } = args;
+			const objectId = new ObjectId(_id);
+			const objectId1 = new ObjectId(currentParentId);
+			const objectId2 = new ObjectId(newParentId);
+			let updated;
 
-	// 	},
-    
-    // unsortTasks: async (_, args) => {
-    //   const { _id, list } = args;
-    //   const listId = new ObjectId(_id);
-	// 		const found = await Todolist.findOne({_id: listId});
-	// 		let listItems = found.items;
-    //   for (let i = 0; i < listItems.length; i++){
-    //     listItems[i] = list[i]
-    //   }
-    //   const updated = await Todolist.updateOne({_id: listId}, { items: listItems })
-    //   if (updated) return (listItems);
-    //   else return (found.items);
-    // },
-    // sortDate: async (_, args) => {
-    //   const { _id } = args;
-    //   const listId = new ObjectId(_id);
-	// 		const found = await Todolist.findOne({_id: listId});
-	// 		let listItems = found.items;
-    //   let listItemsCheck = [];
-    //   for (let i = 0; i < listItems.length; i++){
-    //     let tempItem = {
-    //       _id: listItems[i]._id,
-    //       id: listItems[i].id,
-    //       description: listItems[i].description,
-    //       due_date: listItems[i].due_date,
-    //       assigned_to: listItems[i].assigned_to,
-    //       completed: listItems[i].completed,
-    //     }
-    //     listItemsCheck[i] = tempItem
-    //   }
-    //   listItemsCheck = listItemsCheck.sort((a, b) => a.due_date.localeCompare(b.due_date))
-    //   let sorted = true;
-    //   for (let i = 0; i < listItems.length; i++){
-    //     if (listItems[i].id !== listItemsCheck[i].id) sorted = false;
-    //   }
-    //   if (sorted === true) listItems = listItemsCheck.reverse();
-    //   else listItems = listItemsCheck
-    //   const updated = await Todolist.updateOne({_id: listId}, { items: listItems })
-    //   if (updated) return (listItems);
-    //   else return (found.items)
-    // },
-    // unsortDate: async (_, args) => {
-    //   const { _id, list } = args;
-    //   const listId = new ObjectId(_id);
-	// 		const found = await Todolist.findOne({_id: listId});
-	// 		let listItems = found.items;
-    //   for (let i = 0; i < listItems.length; i++){
-    //     listItems[i] = list[i]
-    //   }
-    //   const updated = await Todolist.updateOne({_id: listId}, { items: listItems })
-    //   if (updated) return (listItems);
-    //   else return (found.items);
-    // },
-    // sortStatus: async (_, args) => {
-    //   const { _id } = args;
-    //   const listId = new ObjectId(_id);
-	// 		const found = await Todolist.findOne({_id: listId});
-	// 		let listItems = found.items;
-    //   let listItemsCheck = [];
-    //   for (let i = 0; i < listItems.length; i++){
-    //     let tempItem = {
-    //       _id: listItems[i]._id,
-    //       id: listItems[i].id,
-    //       description: listItems[i].description,
-    //       due_date: listItems[i].due_date,
-    //       assigned_to: listItems[i].assigned_to,
-    //       completed: listItems[i].completed,
-    //     }
-    //     listItemsCheck[i] = tempItem
-    //   }
-    //   listItemsCheck = listItemsCheck.sort((a, b) => a.completed - b.completed)
-    //   let sorted = true;
-    //   for (let i = 0; i < listItems.length; i++){
-    //     if (listItems[i].id !== listItemsCheck[i].id) sorted = false;
-    //   }
-    //   if (sorted === true) listItems = listItemsCheck.reverse();
-    //   else listItems = listItemsCheck
-    //   const updated = await Todolist.updateOne({_id: listId}, { items: listItems })
-    //   if (updated) return (listItems);
-    //   else return (found.items)
-    // },
-    // unsortStatus: async (_, args) => {
-    //   const { _id, list } = args;
-    //   const listId = new ObjectId(_id);
-	// 		const found = await Todolist.findOne({_id: listId});
-	// 		let listItems = found.items;
-    //   for (let i = 0; i < listItems.length; i++){
-    //     listItems[i] = list[i]
-    //   }
-    //   const updated = await Todolist.updateOne({_id: listId}, { items: listItems })
-    //   if (updated) return (listItems);
-    //   else return (found.items);
-    // },
-    // sortAssigned: async (_, args) => {
-    //   const { _id } = args;
-    //   const listId = new ObjectId(_id);
-	// 		const found = await Todolist.findOne({_id: listId});
-	// 		let listItems = found.items;
-    //   let listItemsCheck = [];
-    //   for (let i = 0; i < listItems.length; i++){
-    //     let tempItem = {
-    //       _id: listItems[i]._id,
-    //       id: listItems[i].id,
-    //       description: listItems[i].description,
-    //       due_date: listItems[i].due_date,
-    //       assigned_to: listItems[i].assigned_to,
-    //       completed: listItems[i].completed,
-    //     }
-    //     listItemsCheck[i] = tempItem
-    //   }
-    //   listItemsCheck = listItemsCheck.sort((a, b) => a.assigned_to.toLowerCase().localeCompare(b.assigned_to.toLowerCase()))
-    //   let sorted = true;
-    //   for (let i = 0; i < listItems.length; i++){
-    //     if (listItems[i].id !== listItemsCheck[i].id) sorted = false;
-    //   }
-    //   if (sorted === true) listItems = listItemsCheck.reverse();
-    //   else listItems = listItemsCheck
-    //   const updated = await Todolist.updateOne({_id: listId}, { items: listItems })
-    //   if (updated) return (listItems);
-    //   else return (found.items)
-    // },
-    // unsortAssigned: async (_, args) => {
-    //   const { _id, list } = args;
-    //   const listId = new ObjectId(_id);
-	// 		const found = await Todolist.findOne({_id: listId});
-	// 		let listItems = found.items;
-    //   for (let i = 0; i < listItems.length; i++){
-    //     listItems[i] = list[i]
-    //   }
-    //   const updated = await Todolist.updateOne({_id: listId}, { items: listItems })
-    //   if (updated) return (listItems);
-    //   else return (found.items);
-    // },
+			let checkWhere = false;
+			let found = await Region.findOne({_id: objectId});
+			if (found === null) {
+				found = await Map.findOne({_id: objectId});
+				checkWhere = true;
+			}
+			if (checkWhere === true) updated = await Map.updateOne({_id: objectId}, { parentId: objectId2 })
+			else updated = await Region.updateOne({_id: objectId}, { parentId: objectId2 })
+
+			checkWhere = false;
+			found = await Region.findOne({_id: objectId1});
+			if (found === null) {
+				found = await Map.findOne({_id: objectId1});
+				checkWhere = true;
+			}
+			updatedChildren = found.regions
+			let tempIndex = updatedChildren.indexOf(objectId)
+			updatedChildren.splice(tempIndex, 1)
+			if (checkWhere === true){
+				updated = await Map.updateOne({_id: objectId1}, { regions: updatedChildren })
+			} else {
+				updated = await Region.updateOne({_id: objectId1}, { regions: updatedChildren })
+			} 
+
+			checkWhere = false;
+			found = await Region.findOne({_id: objectId2});
+			if (found === null) {
+				found = await Map.findOne({_id: objectId2});
+				checkWhere = true;
+			}
+			updatedChildren = found.regions
+			updatedChildren.push(objectId)
+			if (checkWhere === true){
+				updated = await Map.updateOne({_id: objectId2}, { regions: updatedChildren })
+			} else {
+				updated = await Region.updateOne({_id: objectId2}, { regions: updatedChildren })
+			}
+
+			if (updated) return true
+			else return false
+
+		},
 
 	}
 }

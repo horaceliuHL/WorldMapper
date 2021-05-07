@@ -164,66 +164,9 @@ export const UNSORT_LEADER = gql`
 	}
 `;
 
-// export const SORT_TASKS = gql`
-//   mutation SortTasks($_id: String!) {
-//     sortTasks(_id: $_id){
-//       _id
-//     }
-//   }
-// `;
+export const SWITCH_PARENTS = gql`
+	mutation SwitchParents($_id: String, $currentParentId: String, $newParentId: String) {
+		switchParents(_id: $_id, currentParentId: $currentParentId, newParentId: $newParentId)
+	}
+`;
 
-// export const UNSORT_TASKS = gql`
-//   mutation UnsortTasks($_id: String!, $list: [ItemInput]!) {
-//     unsortTasks(_id: $_id, list: $list){
-//       _id
-//     }
-//   }
-// `;
-
-// export const SORT_DATE = gql`
-//   mutation SortDate($_id: String!) {
-//     sortDate(_id: $_id){
-//       _id
-//     }
-//   }
-// `;
-
-// export const UNSORT_DATE = gql`
-//   mutation UnsortDate($_id: String!, $list: [ItemInput]!) {
-//     unsortDate(_id: $_id, list: $list){
-//       _id
-//     }
-//   }
-// `;
-
-// export const SORT_STATUS = gql`
-//   mutation SortStatus($_id: String!) {
-//     sortStatus(_id: $_id){
-//       _id
-//     }
-//   }
-// `;
-
-// export const UNSORT_STATUS = gql`
-//   mutation UnsortStatus($_id: String!, $list: [ItemInput]!) {
-//     unsortStatus(_id: $_id, list: $list){
-//       _id
-//     }
-//   }
-// `;
-
-// export const SORT_ASSIGNED = gql`
-//   mutation SortAssigned($_id: String!) {
-//     sortAssigned(_id: $_id){
-//       _id
-//     }
-//   }
-// `;
-
-// export const UNSORT_ASSIGNED = gql`
-//   mutation UnsortAssigned($_id: String!, $list: [ItemInput]!) {
-//     unsortAssigned(_id: $_id, list: $list){
-//       _id
-//     }
-//   }
-// `;

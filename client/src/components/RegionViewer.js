@@ -1,12 +1,19 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useParams, useHistory} from 'react-router-dom';
 import NavbarOptions from './navbar/NavbarOptions.js';
 import UpdateAccount from './modals/Update.js';
 import AddIcon from '@material-ui/icons/Add';
 import UndoIcon from '@material-ui/icons/Undo';
 import RedoIcon from '@material-ui/icons/Redo';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import CreateIcon from '@material-ui/icons/Create';
 import { useMutation, useQuery } 		from '@apollo/client';
-import { GET_DB_REGIONS, GET_ALL_PARENT_REGIONS } 				from '../cache/queries';
+import { GET_DB_REGIONS, GET_ALL_PARENT_REGIONS, GET_DB_MAPS } 				from '../cache/queries';
+import * as mutations 					from '../cache/mutations';
+import { 
+	SwitchParents_Transaction,
+  jsTPS} 				from '../utils/jsTPS';
 import '../css/regionviewer.css';
 
 const RegionViewer = (props) => {
@@ -22,45 +29,170 @@ const RegionViewer = (props) => {
     }
     let siblingRegions = []
     let parentRegions = []
+    let allRegions = []
+    let allMaps = []
+    let allPossibleChangeParents = []
 
     const { regionId } = useParams()
 
+    const [SwitchParents] = useMutation(mutations.SWITCH_PARENTS)
+
     const [showUpdate, toggleShowUpdate] 		= useState(false);
+    const [showEditingParent, setShowEditingParent] = useState(false);
+
+    const [hasTransUndo, showHasTransUndo] = useState(false)
+    const [hasTransRedo, showHasTransRedo] = useState(false)
 
     const auth = props.user === null ? false : true;
+
+    const { loading:loading1, error:error1, data:data1, refetch:refetch1 } = useQuery(GET_DB_MAPS);
+	// if(loading1) { console.log(loading1, 'loading'); }
+	if(error1) { console.log(error1, 'error'); }
+	if(data1) { allMaps = data1.getAllMaps; }
 
     const { loading:loading2, error:error2, data:data2, refetch:refetch2 } = useQuery(GET_ALL_PARENT_REGIONS, {
         variables: {_id: regionId},
     });
-    if(loading2) { console.log(loading2, 'loading'); }
+    // if(loading2) { console.log(loading2, 'loading'); }
 	if(error2) { console.log(error2, 'error'); }
 	if(data2) { 
         if (data2.getAllParentRegions) parentRegions = data2.getAllParentRegions; 
     }
 
     const { loading, error, data, refetch } = useQuery(GET_DB_REGIONS);
-    if(loading) { console.log(loading, 'loading'); }
+    // if(loading) { console.log(loading, 'loading'); }
 	if(error) { console.log(error, 'error'); }
 	if(data) { 
+        allRegions = data.getAllRegions;
         siblingRegions = data.getAllRegions; 
         currentRegion = siblingRegions.find(region => region._id === regionId)
-        siblingRegions = siblingRegions.filter(region => {
-            return region.parentId === currentRegion.parentId;
-        });   
+        if (currentRegion !== undefined){
+            siblingRegions = siblingRegions.filter(region => {
+                return region.parentId === currentRegion.parentId;
+            });   
+        }
     }
+
+    useEffect(() => {
+        window.addEventListener('keydown', handlePressed);
+        return () => {
+            window.removeEventListener('keydown', handlePressed);
+        }
+    })
+
+    useEffect(() => {
+        props.tps.clearAllTransactions();
+    }, [])
+    
+    const handlePressed = (e) => {
+        if(e.key === 'z' && e.ctrlKey === true){
+            tpsUndo()
+        } 
+        else if(e.key === 'y' && e.ctrlKey === true){
+            tpsRedo()
+        }
+    }
+
+    const tpsUndo = async () => {
+		const retVal = await props.tps.undoTransaction();
+        const hasUndoVal = await props.tps.hasTransactionToUndo();
+        const hasRedoVal = await props.tps.hasTransactionToRedo();
+        showHasTransUndo(hasUndoVal);
+        showHasTransRedo(hasRedoVal)
+		refetchRegions(refetch);
+        refetchParentRegions(refetch2);
+		return retVal;
+	}
+
+	const tpsRedo = async () => {
+		const retVal = await props.tps.doTransaction();
+        const hasUndoVal = await props.tps.hasTransactionToUndo();
+        const hasRedoVal = await props.tps.hasTransactionToRedo();
+        showHasTransUndo(hasUndoVal);
+        showHasTransRedo(hasRedoVal)
+		refetchRegions(refetch);
+        refetchParentRegions(refetch2);
+		return retVal;
+	}
 
     const refetchRegions = async (refetch) => {
 		const { loading, error, data } = await refetch();
 		if (data) {
-			siblingRegions = data.getAllRegions;
-            siblingRegions = siblingRegions.filter(region => {
-                return region.parentId === currentRegion.parentId;
-            });
+			allRegions = data.getAllRegions;
+            siblingRegions = data.getAllRegions; 
+            currentRegion = siblingRegions.find(region => region._id === regionId)
+            if (currentRegion !== undefined){
+                siblingRegions = siblingRegions.filter(region => {
+                    return region.parentId === currentRegion.parentId;
+                });   
+            }
 		}
 	}
 
+    const refetchParentRegions = async (refetch) => {
+		const { loading, error, data } = await refetch();
+		if (data2.getAllParentRegions) parentRegions = data2.getAllParentRegions; 
+	}
+
+    const findPossibleParents = async () => {
+        let counter = 0;
+        if (currentRegion === undefined) return
+        let tempRegion = currentRegion;
+        while (counter <= 20){
+            let tempHello = allRegions.filter(region => {
+                return region._id === tempRegion.parentId
+            })
+            if (tempHello.length === 0){
+                tempHello = allMaps.filter(region => {
+                    return region._id === tempRegion.parentId
+                })
+                tempRegion = tempHello[0]
+                break;
+            } else {
+                tempRegion = tempHello[0]
+                counter += 1;
+            }
+        }
+        if (tempRegion !== undefined){
+            let tempIndex = allMaps.indexOf(tempRegion)
+            allPossibleChangeParents.push(allMaps[tempIndex])
+            let tempStorage =  allMaps[tempIndex].regions
+            let tempStorage1 = []
+            for (let i = 0; i < counter; i++){
+                for (let j = 0; j < tempStorage.length; j++){
+                    let findRegion =  allRegions.filter(region => {
+                        return region._id === tempStorage[j]
+                    })
+                    allPossibleChangeParents.push(findRegion[0])
+                    let findIndex =  allRegions.indexOf(findRegion[0])
+                    tempStorage1 = tempStorage1.concat(allRegions[findIndex].regions)
+                }
+                tempStorage = tempStorage1
+                tempStorage1 = []
+            }
+        }
+    }
+    findPossibleParents()
+
     const setShowUpdate = () => {
         toggleShowUpdate(!showUpdate)
+    }
+
+    const navToPrevSibling = () => {
+        let tempIndex = siblingRegions.indexOf(currentRegion)
+        if (tempIndex > 0) history.push("/viewer/" + siblingRegions[tempIndex - 1]._id)
+    }
+
+    const navToNextSibling = () => {
+        let tempIndex = siblingRegions.indexOf(currentRegion)
+        if (tempIndex < siblingRegions.length - 1) history.push("/viewer/" + siblingRegions[tempIndex + 1]._id)
+    }
+
+    const handleChangeParent = (e) => {
+        setShowEditingParent(false)
+        let transaction = new SwitchParents_Transaction(currentRegion._id, currentRegion.parentId, e.target.value, SwitchParents);
+        props.tps.addTransaction(transaction);
+        tpsRedo();
     }
 
     return (
@@ -81,18 +213,40 @@ const RegionViewer = (props) => {
                 ))
             }
         </div>
+        <div className="navSiblings">
+            <ArrowBackIcon className="prevSibling" onClick={navToPrevSibling}/>
+            <ArrowForwardIcon className="nextSibling" onClick={navToNextSibling}/>
+        </div>
         <div className="flexContainerviewer">
             <div className="leftSideViewer">
-                <div className="undoRedoViewer">
-                    <UndoIcon className="undoArrowViewer"></UndoIcon>
-                    <RedoIcon className="redoArrowViewer"></RedoIcon>
+                <div className="undoRedoViewer"> 
+                {
+                    hasTransUndo ? <UndoIcon className="undoArrowViewer" onClick={tpsUndo}></UndoIcon>
+                    : <div></div>
+                }
+                {
+                    hasTransRedo ? <RedoIcon className="redoArrowViewer" onClick={tpsRedo}></RedoIcon>
+                    : <div></div>
+                }
                 </div>
                 <img className="flagViewer"></img>
                 {
-                    parentRegions.length > 0 ? 
+                    (parentRegions.length > 0 && currentRegion) ? 
                     <div className="regionInfoViewer">
                         <div className="regionNameViewer">Region Name: {currentRegion.name}</div>
-                        <div className="parentRegionViewer">Parent Region: &nbsp;<div className="clickParentViewer" onClick={() => history.push('/' + currentRegion.parentId)}>{parentRegions[parentRegions.length - 2].name}</div></div>
+                        <div className="parentRegionViewer">Parent Region: &nbsp;
+                            <div className="clickParentViewer" onClick={() => history.push('/' + currentRegion.parentId)}>{parentRegions[parentRegions.length - 2].name}</div>
+                            {
+                                showEditingParent ? <select className="editingParentRegionViewer" onBlur={handleChangeParent} defaultValue={currentRegion.parentId} autoFocus>
+                                    {
+                                        allPossibleChangeParents && allPossibleChangeParents.map(item => (
+                                            <option value={item._id}>{item.name}</option>
+                                        ))
+                                    }
+                                </select>
+                                : <CreateIcon className="editParentRegionViewer" onClick={() => setShowEditingParent(true)}/>
+                            }
+                        </div>
                         <div className="regionCapitalViewer">Region Capital: {currentRegion.capital}</div>
                         <div className="regionLeaderViewer">Region Leader: {currentRegion.leader}</div>
                         <div className="subregionsViewer"># of Sub Regions: {currentRegion.regions.length}</div>

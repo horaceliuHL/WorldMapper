@@ -41,6 +41,7 @@ const typeDefs = gql `
 		unsortCapital(_id: String, list: [String]): [String]
 		sortLeader(_id: String): [String]
 		unsortLeader(_id: String, list: [String]): [String]
+		switchParents(_id: String, currentParentId: String, newParentId: String): Boolean
 	}
 	type ParentInput {
 		_id: String
