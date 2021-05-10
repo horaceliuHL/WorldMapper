@@ -42,6 +42,10 @@ const typeDefs = gql `
 		sortLeader(_id: String): [String]
 		unsortLeader(_id: String, list: [String]): [String]
 		switchParents(_id: String, currentParentId: String, newParentId: String): Boolean
+		getAllLandmarks(_id: String): [String]
+		addLandmark(_id: String, name: String): Boolean
+		deleteLandmark(_id: String, name: String): Boolean
+		editLandmark(_id: String, name: String, newName: String): Boolean
 	}
 	type ParentInput {
 		_id: String

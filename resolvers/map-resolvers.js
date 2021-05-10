@@ -376,8 +376,59 @@ module.exports = {
 
 			if (updated) return true
 			else return false
-
 		},
+		getAllLandmarks: async (_, args) => { //https://www.geeksforgeeks.org/preorder-traversal-of-n-ary-tree-without-recursion/
+			const { _id } = args;
+			const objectId = new ObjectId(_id);
+			let found = await Region.findOne({_id: objectId});
+			let storeFinalList = []
+			let nodes = []
+			nodes.push(found._id)
+			while (nodes.length !== 0){
+				let curr = nodes.shift()
+				if (curr !== null){
+					let temp = await Region.findOne({_id: curr});
+					let land = temp.landmarks.map(i => i + ' - ' + temp.name)
+					storeFinalList = storeFinalList.concat(land);
+					for (let i = 0; i < temp.regions.length; i++){
+						nodes.push(temp.regions[i])
+					}
+				}
+			}
+			return storeFinalList;
+		},
+		addLandmark: async (_, args) => {
+			const { _id, name } = args;
+			const objectId = new ObjectId(_id);
+			let found = await Region.findOne({_id: objectId});
+			let updatedLandmarks = found.landmarks
+			if (updatedLandmarks.indexOf(name) === -1) updatedLandmarks.push(name)
+			let updated = await Region.updateOne({_id: objectId}, { landmarks: updatedLandmarks })
+			if (updated) return true
+			else return false
+		},
+		deleteLandmark: async (_, args) => {
+			const { _id, name } = args;
+			const objectId = new ObjectId(_id);
+			let found = await Region.findOne({_id: objectId});
+			let updatedLandmarks = found.landmarks
+			let tempIndex = updatedLandmarks.indexOf(name)
+			updatedLandmarks.splice(tempIndex, 1)
+			let updated = await Region.updateOne({_id: objectId}, { landmarks: updatedLandmarks })
+			if (updated) return true
+			else return false
+		},
+		editLandmark: async (_, args) => {
+			const { _id, name, newName } = args;
+			const objectId = new ObjectId(_id);
+			let found = await Region.findOne({_id: objectId});
+			let updatedLandmarks = found.landmarks
+			let tempIndex = updatedLandmarks.indexOf(name)
+			updatedLandmarks[tempIndex] = newName
+			let updated = await Region.updateOne({_id: objectId}, { landmarks: updatedLandmarks })
+			if (updated) return true
+			else return false
+		}
 
 	}
 }
