@@ -18,6 +18,7 @@ import {
 
 import '../css/regionspreadsheet.css';
 import SpreadsheetItems from './SpreadsheetItems.js';
+import { FileCopy } from '@material-ui/icons';
 
 
 const RegionSpreadsheet = (props) => {
@@ -96,6 +97,13 @@ const RegionSpreadsheet = (props) => {
 			regionsList = data.getAllChildrenRegions;
 		}
 	}
+
+    let flagPath = '../';
+    for (let i = 0; i < parentRegions.length; i++){
+        flagPath += parentRegions[i].name + '/';
+    }
+    
+    
 
     useEffect(() => {
         window.addEventListener('keydown', handlePressed);
@@ -279,6 +287,7 @@ const RegionSpreadsheet = (props) => {
                     regionsList.length !== 0 && regionsList.map((region, index) => (
                         <SpreadsheetItems region={region} setShowDelete1={setShowDelete1} editStuff={editStuff} index={index}
                             changing={changing} arrowV={arrowV} arrowH={arrowH} clearAll={() => props.tps.clearAllTransactions()}
+                            flagPath={flagPath}
                         />    
                     ))
                 }</div>

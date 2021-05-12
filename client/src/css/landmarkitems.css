@@ -1,0 +1,38 @@
+.eachLandmark{
+    color: white;
+    font-weight: bold;
+    font-size: 24px;
+    padding: 1%;
+    display: flex;
+}
+
+.eachLandmark1{
+    color: #8c8c85;
+    font-weight: bold;
+    font-size: 24px;
+    padding: 1%;
+}
+
+.closeLandmark{
+    transform: scale(1.5);
+    color: red;
+    margin-right: 3%;
+    margin-top: 1%;
+}
+
+.closeLandmark1{
+    transform: scale(1.5);
+    color: red;
+    margin-right: 3%;
+    margin-top: 1%;
+    visibility: hidden;
+}
+
+.closeLandmark:hover {
+    cursor: pointer;
+}
+
+.inputLandmark{
+    margin-left: 3%;
+    height: 8%;
+}

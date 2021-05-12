@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import CloseIcon from '@material-ui/icons/Close';
-import {useHistory} from 'react-router-dom'
+import {useHistory} from 'react-router-dom';
+// import Image from 'react-bootstrap/Image'
 import '../css/spreadsheetitems.css'
 
 const SpreadsheetItems = (props) => {
@@ -8,6 +9,48 @@ const SpreadsheetItems = (props) => {
     const [editName, setEditName] = useState(props.region.name)
     const [editCapital, setEditCapital] = useState(props.region.capital)
     const [editLeader, setEditLeader] = useState(props.region.leader)
+    const [flagPath, setFlagPath] = useState(false)
+    const [actualPath, setActualPath] = useState()
+
+    // let tempPath = '../The World/Middle East/Armenia Flag.png'
+    // let hello = require(`${props.flagPath + props.region.name} Flag.png`)
+    // var image = new Image();
+    // image.src = hello
+    // if (image.width !== 0){
+    //     flagPath = true
+    // }
+
+    let tempPath = '../The World/Middle East/Armenia Flag.png'
+    console.log(window.location)
+
+    // useEffect(() => {
+    //     try{
+    //     var image = new Image();
+    //     var url_image = props.flagPath + props.region.name +  ' Flag.png';
+    //     console.log(url_image)
+        
+    //     image.src = require(`${url_image}`)
+    //     console.log("here")
+    //     // if (image.width == 0) {
+    //     //     setFlagPath(false)
+    //     // } else {
+    //         setFlagPath(true)
+    //         setActualPath(image.src)
+    //         console.log("gotten to here")
+    //     // }
+    // } catch (e) {
+    //     setFlagPath(false)
+    // }
+    //     // try{
+    //     //     let src = props.flagPath + props.region.name + ' Flag.png';
+    //     //     setFlagPath(src)
+    //     // } catch (err){
+    //     //     console.log("flag path not found")
+    //     // }
+    // })
+    
+
+    // let actualFlagPath = props.flagPath + props.region.name + ' Flag.png';
 
     let clickOrEdit = {
         clicked: 0,
@@ -92,11 +135,14 @@ const SpreadsheetItems = (props) => {
                         props.changing(props.index, 3)
                     }}>{props.region.leader}</div>
             }
-            <div className="regionItemFlagSpreadsheet">{props.region.flag}</div>
+            {
+                flagPath === false  ? <img src={require('../The World/Middle East/Armenia Flag.png')} onError={() => {setFlagPath(false)}} />
+                : <div className="regionItemFlagSpreadsheet">{props.region.flag}</div>
+            }
             <div className="regionItemLandmarksSpreadsheet" onClick={() => {
                 props.clearAll();
                 history.push("/viewer/" + props.region._id);
-            }}>{props.region.landmarks}</div>
+            }}>{props.region.landmarks.toString()}</div>
         </div>
 
     )

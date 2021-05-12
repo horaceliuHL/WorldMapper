@@ -26,6 +26,7 @@ const typeDefs = gql `
 		getAllRegions: [Region]
 		getAllParentRegions(_id: String): [ParentInput]
 		getAllChildrenRegions(_id: String): [Region]
+		getAllLandmarks(_id: String): [String]
 	}
 	extend type Mutation {
 		quickModifyMap(_id: String): Boolean
@@ -42,7 +43,6 @@ const typeDefs = gql `
 		sortLeader(_id: String): [String]
 		unsortLeader(_id: String, list: [String]): [String]
 		switchParents(_id: String, currentParentId: String, newParentId: String): Boolean
-		getAllLandmarks(_id: String): [String]
 		addLandmark(_id: String, name: String): Boolean
 		deleteLandmark(_id: String, name: String): Boolean
 		editLandmark(_id: String, name: String, newName: String): Boolean

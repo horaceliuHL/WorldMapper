@@ -75,3 +75,9 @@ export const GET_ALL_PARENT_REGIONS = gql`
 	}
 `
 
+export const GET_ALL_LANDMARKS = gql`
+	query GetAllLandmarks($_id: String) {
+		getAllLandmarks(_id: $_id)
+	}
+`;
+

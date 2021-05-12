@@ -114,6 +114,60 @@ export class SwitchParents_Transaction extends jsTPS_Transaction {
     
 }
 
+export class AddLandmark_Transaction extends jsTPS_Transaction {
+    constructor(itemID, item, addfunc, delfunc){
+        super();
+        this.itemID = itemID
+        this.item = item
+        this.addfunc = addfunc
+        this.delfunc = delfunc
+    }
+    async doTransaction(){
+        const { data } = await this.addfunc({ variables: { _id: this.itemID, name: this.item } })
+        return data;
+    }
+    async undoTransaction(){
+        const {data} = await this.delfunc({ variables: {_id: this.itemID, name: this.item} })
+        return data;
+    }
+}
+
+export class DeleteLandmark_Transaction extends jsTPS_Transaction {
+    constructor(itemID, item, addfunc, delfunc){
+        super();
+        this.itemID = itemID
+        this.item = item
+        this.addfunc = addfunc
+        this.delfunc = delfunc
+    }
+    async doTransaction(){
+        const { data } = await this.delfunc({ variables: { _id: this.itemID, name: this.item } })
+        return data;
+    }
+    async undoTransaction(){
+        const {data} = await this.addfunc({ variables: {_id: this.itemID, name: this.item} })
+        return data;
+    }
+}
+
+export class EditLandmark_Transaction extends jsTPS_Transaction {
+    constructor(itemID, item, newItem, func){
+        super();
+        this.itemID = itemID
+        this.item = item
+        this.newItem = newItem
+        this.func = func
+    }
+    async doTransaction(){
+        const { data } = await this.func({ variables: { _id: this.itemID, name: this.item, newName: this.newItem } })
+        return data;
+    }
+    async undoTransaction(){
+        const {data} = await this.func({ variables: {_id: this.itemID, name: this.newItem, newName: this.item} })
+        return data;
+    }
+}
+
 
 
 export class jsTPS {

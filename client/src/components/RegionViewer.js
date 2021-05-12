@@ -9,11 +9,15 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import CreateIcon from '@material-ui/icons/Create';
 import { useMutation, useQuery } 		from '@apollo/client';
-import { GET_DB_REGIONS, GET_ALL_PARENT_REGIONS, GET_DB_MAPS } 				from '../cache/queries';
+import { GET_DB_REGIONS, GET_ALL_PARENT_REGIONS, GET_DB_MAPS, GET_ALL_LANDMARKS } 				from '../cache/queries';
 import * as mutations 					from '../cache/mutations';
 import { 
 	SwitchParents_Transaction,
+    AddLandmark_Transaction,
+    DeleteLandmark_Transaction,
+    EditLandmark_Transaction,
   jsTPS} 				from '../utils/jsTPS';
+import LandmarkItems from './LandmarkItems.js';
 import '../css/regionviewer.css';
 
 const RegionViewer = (props) => {
@@ -32,16 +36,22 @@ const RegionViewer = (props) => {
     let allRegions = []
     let allMaps = []
     let allPossibleChangeParents = []
+    let allLandmarks = []
 
     const { regionId } = useParams()
 
     const [SwitchParents] = useMutation(mutations.SWITCH_PARENTS)
+    const [AddLandmark] = useMutation(mutations.ADD_LANDMARK)
+    const [DeleteLandmark] = useMutation(mutations.DELETE_LANDMARK)
+    const [EditLandmark] = useMutation(mutations.EDIT_LANDMARK)
 
     const [showUpdate, toggleShowUpdate] 		= useState(false);
     const [showEditingParent, setShowEditingParent] = useState(false);
 
     const [hasTransUndo, showHasTransUndo] = useState(false)
     const [hasTransRedo, showHasTransRedo] = useState(false)
+
+    const [editLandmark, setEditLandmark] = useState('')
 
     const auth = props.user === null ? false : true;
 
@@ -57,6 +67,20 @@ const RegionViewer = (props) => {
 	if(error2) { console.log(error2, 'error'); }
 	if(data2) { 
         if (data2.getAllParentRegions) parentRegions = data2.getAllParentRegions; 
+    }
+
+    const { loading:loading3, error:error3, data:data3, refetch:refetch3 } = useQuery(GET_ALL_LANDMARKS, {
+        variables: {_id: regionId},
+    });
+	if(error3) { console.log(error3, 'error'); }
+	if(data3) { 
+        if (data3.getAllLandmarks){
+            let tempLandmarks = data3.getAllLandmarks; 
+            allLandmarks = tempLandmarks.slice()
+            allLandmarks.sort((a, b) => {
+                return a.toLowerCase().localeCompare(b.toLowerCase());
+            })
+        }
     }
 
     const { loading, error, data, refetch } = useQuery(GET_DB_REGIONS);
@@ -101,6 +125,7 @@ const RegionViewer = (props) => {
         showHasTransRedo(hasRedoVal)
 		refetchRegions(refetch);
         refetchParentRegions(refetch2);
+        refetchLandmarks(refetch3);
 		return retVal;
 	}
 
@@ -112,6 +137,7 @@ const RegionViewer = (props) => {
         showHasTransRedo(hasRedoVal)
 		refetchRegions(refetch);
         refetchParentRegions(refetch2);
+        refetchLandmarks(refetch3);
 		return retVal;
 	}
 
@@ -133,6 +159,18 @@ const RegionViewer = (props) => {
 		const { loading, error, data } = await refetch();
 		if (data2.getAllParentRegions) parentRegions = data2.getAllParentRegions; 
 	}
+
+    const refetchLandmarks = async (refetch) => {
+		const { loading, error, data } = await refetch();
+		if (data3.getAllLandmarks){
+            let tempLandmarks = data3.getAllLandmarks; 
+            allLandmarks = tempLandmarks.slice()
+            allLandmarks.sort((a, b) => {
+                return a.toLowerCase().localeCompare(b.toLowerCase());
+            })
+        }
+	}
+
 
     const findPossibleParents = async () => {
         let counter = 0;
@@ -191,6 +229,30 @@ const RegionViewer = (props) => {
     const handleChangeParent = (e) => {
         setShowEditingParent(false)
         let transaction = new SwitchParents_Transaction(currentRegion._id, currentRegion.parentId, e.target.value, SwitchParents);
+        props.tps.addTransaction(transaction);
+        tpsRedo();
+    }
+
+    const addNewLandmark = () => {
+        if (editLandmark !== ''){
+            let temp = editLandmark + ' - ' + currentRegion.name
+            if (allLandmarks.indexOf(temp) === -1){
+                let transaction = new AddLandmark_Transaction(currentRegion._id, editLandmark, AddLandmark, DeleteLandmark);
+                props.tps.addTransaction(transaction);
+                tpsRedo();
+                setEditLandmark('');
+            }
+        }
+    }
+
+    const handleDeleteLandmark = (name) => {
+        let transaction = new DeleteLandmark_Transaction(currentRegion._id, name, AddLandmark, DeleteLandmark);
+        props.tps.addTransaction(transaction);
+        tpsRedo();
+    }
+
+    const handleChangeLandmark = (name, newName) => {
+        let transaction = new EditLandmark_Transaction(currentRegion._id, name, newName, EditLandmark);
         props.tps.addTransaction(transaction);
         tpsRedo();
     }
@@ -260,14 +322,14 @@ const RegionViewer = (props) => {
                 <div className="regionLandmarksBox">
                     <div className="regionLandmarksListViewer">
                         {
-                            currentRegion && currentRegion.landmarks.map(x => (
-                                <div>{x}</div>
+                            allLandmarks && allLandmarks.map(x => (
+                                <LandmarkItems x={x} currentRegion={currentRegion} delLand={handleDeleteLandmark} editLand={handleChangeLandmark}/>
                             ))
                         }
                     </div>
                     <div className="regionLandmarksAddViewer">
-                        <AddIcon className="plusViewer"></AddIcon>
-                        <input></input>
+                        <AddIcon className="plusViewer" onClick={addNewLandmark}></AddIcon>
+                        <input className="regionLandmarksEdit" onChange={(e) => setEditLandmark(e.target.value)} defaultValue={editLandmark}></input>
                     </div>
                 </div>
             </div>

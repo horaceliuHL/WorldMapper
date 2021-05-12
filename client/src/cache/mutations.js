@@ -170,12 +170,6 @@ export const SWITCH_PARENTS = gql`
 	}
 `;
 
-export const GET_ALL_LANDMARKS = gql`
-	mutation GetAllLandmarks($_id: String) {
-		getAllLandmarks(_id: $_id)
-	}
-`;
-
 export const ADD_LANDMARK = gql`
 	mutation AddLandmark($_id: String, $name: String) {
 		addLandmark(_id: $_id, name: $name)
@@ -189,7 +183,7 @@ export const DELETE_LANDMARK = gql`
 `;
 
 export const EDIT_LANDMARK = gql`
-	mutation DeleteLandmark($_id: String, $name: String, $newName: String) {
-		deleteLandmark(_id: $_id, name: $name, newName: $newName)
+	mutation EditLandmark($_id: String, $name: String, $newName: String) {
+		editLandmark(_id: $_id, name: $name, newName: $newName)
 	}
 `;

@@ -64,6 +64,26 @@ module.exports = {
 			}
 			return childrenRegions
 		},
+		getAllLandmarks: async (_, args) => { //https://www.geeksforgeeks.org/preorder-traversal-of-n-ary-tree-without-recursion/
+			const { _id } = args;
+			const objectId = new ObjectId(_id);
+			let found = await Region.findOne({_id: objectId});
+			let storeFinalList = []
+			let nodes = []
+			nodes.push(found._id)
+			while (nodes.length !== 0){
+				let curr = nodes.shift()
+				if (curr !== null){
+					let temp = await Region.findOne({_id: curr});
+					let land = temp.landmarks.map(i => i + ' - ' + temp.name)
+					storeFinalList = storeFinalList.concat(land);
+					for (let i = 0; i < temp.regions.length; i++){
+						nodes.push(temp.regions[i])
+					}
+				}
+			}
+			return storeFinalList;
+		},
 	},
 	Mutation: {
 		quickModifyMap: async (_, args) => {
@@ -376,26 +396,6 @@ module.exports = {
 
 			if (updated) return true
 			else return false
-		},
-		getAllLandmarks: async (_, args) => { //https://www.geeksforgeeks.org/preorder-traversal-of-n-ary-tree-without-recursion/
-			const { _id } = args;
-			const objectId = new ObjectId(_id);
-			let found = await Region.findOne({_id: objectId});
-			let storeFinalList = []
-			let nodes = []
-			nodes.push(found._id)
-			while (nodes.length !== 0){
-				let curr = nodes.shift()
-				if (curr !== null){
-					let temp = await Region.findOne({_id: curr});
-					let land = temp.landmarks.map(i => i + ' - ' + temp.name)
-					storeFinalList = storeFinalList.concat(land);
-					for (let i = 0; i < temp.regions.length; i++){
-						nodes.push(temp.regions[i])
-					}
-				}
-			}
-			return storeFinalList;
 		},
 		addLandmark: async (_, args) => {
 			const { _id, name } = args;
