@@ -12,45 +12,17 @@ const SpreadsheetItems = (props) => {
     const [flagPath, setFlagPath] = useState(false)
     const [actualPath, setActualPath] = useState()
 
-    // let tempPath = '../The World/Middle East/Armenia Flag.png'
-    // let hello = require(`${props.flagPath + props.region.name} Flag.png`)
-    // var image = new Image();
-    // image.src = hello
-    // if (image.width !== 0){
-    //     flagPath = true
-    // }
-
-    let tempPath = '../The World/Middle East/Armenia Flag.png'
-    console.log(window.location)
-
-    // useEffect(() => {
-    //     try{
-    //     var image = new Image();
-    //     var url_image = props.flagPath + props.region.name +  ' Flag.png';
-    //     console.log(url_image)
-        
-    //     image.src = require(`${url_image}`)
-    //     console.log("here")
-    //     // if (image.width == 0) {
-    //     //     setFlagPath(false)
-    //     // } else {
-    //         setFlagPath(true)
-    //         setActualPath(image.src)
-    //         console.log("gotten to here")
-    //     // }
-    // } catch (e) {
-    //     setFlagPath(false)
-    // }
-    //     // try{
-    //     //     let src = props.flagPath + props.region.name + ' Flag.png';
-    //     //     setFlagPath(src)
-    //     // } catch (err){
-    //     //     console.log("flag path not found")
-    //     // }
-    // })
-    
-
-    // let actualFlagPath = props.flagPath + props.region.name + ' Flag.png';
+    useEffect(() => {
+        try{
+            var image = new Image();
+            var url_image = props.flagPath + props.region.name +  ' Flag.png';
+            image.src = require(`../${url_image}`)
+            setFlagPath(true)
+            setActualPath(image.src)
+        } catch (e) {
+            setFlagPath(false)
+        }
+    })
 
     let clickOrEdit = {
         clicked: 0,
@@ -136,7 +108,7 @@ const SpreadsheetItems = (props) => {
                     }}>{props.region.leader}</div>
             }
             {
-                flagPath === false  ? <img src={require('../The World/Middle East/Armenia Flag.png')} onError={() => {setFlagPath(false)}} />
+                flagPath === true  ? <img className="regionItemFlagSpreadsheet1" src={actualPath} onError={() => {setFlagPath(false)}} />
                 : <div className="regionItemFlagSpreadsheet">{props.region.flag}</div>
             }
             <div className="regionItemLandmarksSpreadsheet" onClick={() => {

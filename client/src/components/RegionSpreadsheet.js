@@ -98,7 +98,7 @@ const RegionSpreadsheet = (props) => {
 		}
 	}
 
-    let flagPath = '../';
+    let flagPath = '';
     for (let i = 0; i < parentRegions.length; i++){
         flagPath += parentRegions[i].name + '/';
     }

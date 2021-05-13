@@ -53,6 +53,9 @@ const RegionViewer = (props) => {
 
     const [editLandmark, setEditLandmark] = useState('')
 
+    const [flagPath, setFlagPath] = useState(false)
+    const [actualPath, setActualPath] = useState()
+
     const auth = props.user === null ? false : true;
 
     const { loading:loading1, error:error1, data:data1, refetch:refetch1 } = useQuery(GET_DB_MAPS);
@@ -96,6 +99,24 @@ const RegionViewer = (props) => {
             });   
         }
     }
+
+    useEffect(() => {
+        try{
+            let flagPath = '';
+            for (let i = 0; i < parentRegions.length; i++){
+                flagPath += parentRegions[i].name + '/';
+            }
+            var image = new Image();
+            var url_image = flagPath.substring(0, flagPath.length - 1) +  ' Flag.png';
+            console.log(url_image)
+            image.src = require(`../${url_image}`)
+            console.log(url_image)
+            setFlagPath(true)
+            setActualPath(image.src)
+        } catch (e) {
+            setFlagPath(false)
+        }
+    })
 
     useEffect(() => {
         window.addEventListener('keydown', handlePressed);
@@ -291,7 +312,7 @@ const RegionViewer = (props) => {
                     : <div></div>
                 }
                 </div>
-                <img className="flagViewer"></img>
+                <img className="flagViewer" src={actualPath}></img>
                 {
                     (parentRegions.length > 0 && currentRegion) ? 
                     <div className="regionInfoViewer">
@@ -323,7 +344,7 @@ const RegionViewer = (props) => {
                     <div className="regionLandmarksListViewer">
                         {
                             allLandmarks && allLandmarks.map(x => (
-                                <LandmarkItems x={x} currentRegion={currentRegion} delLand={handleDeleteLandmark} editLand={handleChangeLandmark}/>
+                                <LandmarkItems x={x} currentRegion={currentRegion} delLand={handleDeleteLandmark} editLand={handleChangeLandmark} flagPath={flagPath}/>
                             ))
                         }
                     </div>
