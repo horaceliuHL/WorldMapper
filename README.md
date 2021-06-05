@@ -2,6 +2,7 @@
 
 The World Mapper allows for account creation, deletion, and update capabilities. It further allows users to add maps, regions, and subregions to list out region names, leaders, capitals, flags, and landmarks. These regions can be sorted, and there are arrow key capabilities for moving around when editing and undoing and redoing the edits. Users can also navigate between parent regions and subregions easily. When viewing the landmarks of a region, users can also add, update, and delete landmarks (with redo and undo capabilities), while being able to view all subregion landmarks as well. A user can also change the parent region of the current region to another parent region.
 
+
 <table>
       <tr>
         <td><img src = "https://user-images.githubusercontent.com/65971326/120876778-daaa1f00-c580-11eb-8a3d-547725b7e834.png"></td>
@@ -12,6 +13,7 @@ The World Mapper allows for account creation, deletion, and update capabilities.
         <td><img src = "https://user-images.githubusercontent.com/65971326/120876779-daaa1f00-c580-11eb-9086-01676f0d7b22.png"></td>
        </tr>
 </table>
+
 
 Technologies used: React, Express, Node, Apollo Server, GraphQL, MongoDB
 
